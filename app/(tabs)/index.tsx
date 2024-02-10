@@ -4,8 +4,6 @@ import { appContext } from '../_layout';
 import { app, appProvider, toDos } from '@/types';
 import { truncate } from 'fs';
 import useTodo from '@/hooks/usetodo';
-import { Button } from 'react-native';
-
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
 import { Link } from "expo-router";
