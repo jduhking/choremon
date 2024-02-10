@@ -6,6 +6,8 @@ import { useContext } from 'react';
 import { appContext } from '../_layout';
 import { app, appProvider, toDos } from '@/types';
 import { truncate } from 'fs';
+import useTodo from '@/hooks/usetodo';
+import { Button } from 'react-native';
 
 export default function TabOneScreen() {
   const {width, updateWidth, toDos, addToDo, currentTask, updateTask, removeToDo, intent, updateIntent} = useContext(appContext) as appProvider
@@ -27,6 +29,7 @@ export default function TabOneScreen() {
     removeToDo(currentTask as toDos),
     updateIntent()
   }
+  const {storeTodo, retrieveTodo, deleteTodo} = useTodo()
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tab One</Text>
