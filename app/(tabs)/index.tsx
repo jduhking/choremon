@@ -1,13 +1,14 @@
-import { Pressable, StyleSheet} from 'react-native';
-
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
+import { Pressable, StyleSheet, Button} from 'react-native';
 import { useContext } from 'react';
 import { appContext } from '../_layout';
 import { app, appProvider, toDos } from '@/types';
 import { truncate } from 'fs';
 import useTodo from '@/hooks/usetodo';
 import { Button } from 'react-native';
+
+import EditScreenInfo from "@/components/EditScreenInfo";
+import { Text, View } from "@/components/Themed";
+import { Link } from "expo-router";
 
 export default function TabOneScreen() {
   const {width, updateWidth, toDos, addToDo, currentTask, updateTask, removeToDo, intent, updateIntent} = useContext(appContext) as appProvider
@@ -33,44 +34,15 @@ export default function TabOneScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tab One</Text>
-      <Pressable style={{width:"30%", height:"10%", backgroundColor:'blue', justifyContent:'center', borderRadius:8, alignItems:'center'}} onPress ={handler}>
-        <Text> press me {width}</Text>
-      </Pressable>
-      {toDos?.map((item)=>(
-        <Text 
-          style={{color:'white'}}
-          key={item.id}
-          onPress={
-            ()=>{
-              updateTask(item)
-              updateIntent()
-            }}
-        >
-          {item.name}
-        </Text>
-      ))}
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+      <View
+        style={styles.separator}
+        lightColor="#eee"
+        darkColor="rgba(255,255,255,0.1)"
+      />
       <EditScreenInfo path="app/(tabs)/index.tsx" />
-      <View>
-        <Button
-          onPress={() => {
-            storeTodo();
-          }}
-          title="Test1"
-        />
-        <Button
-          onPress={() => {
-            retrieveTodo();
-          }}
-          title="Test2"
-        />
-        <Button
-          onPress={() => {
-            deleteTodo("string2");
-          }}
-          title="Test3"
-        />
-      </View>
+      <Link href="/parent/">
+        <Text>Click here</Text>
+      </Link>
     </View>
   );
 }
