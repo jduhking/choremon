@@ -3,9 +3,12 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, createContext, useState } from 'react';
+import { app, toDos, appProvider } from '@/types';
+
 
 import { useColorScheme } from '@/components/useColorScheme';
+export const appContext = createContext<appProvider | undefined>(undefined)
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -47,12 +50,57 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
+  const [toDos, setToDos] = useState<toDos[]>()
+  const [width, setWidth] = useState<number>(0)
+  const [height, setHeight] = useState<number>(0)
+  const [isParent, setIsparent] = useState<boolean>()
+  const [level, setLevel] = useState<number>()
+
+  const addToDo = (task:toDos) => {
+    setToDos(prevArrray => prevArrray?.concat(task))
+  }
+
+  const removeToDo = (task:toDos) => {
+    setToDos(toDos?.filter(item => item.id != task.name))
+  }
+
+  const updateWidth = () => {
+    setWidth(prev => prev + 1)
+  }
+
+  const updateHeight = () => {
+    setHeight(prev => prev + 1)
+  }
+
+  const updateMode = (userMode:boolean) => {
+    setIsparent(userMode)
+  }
+
+  const updateLevel = (newLevel:number) => {
+    setLevel(newLevel)
+  }
+
+
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
+      <appContext.Provider value={{
+        toDos,
+        width,
+        height,
+        isParent,
+        level,
+        addToDo,
+        removeToDo,
+        updateWidth,
+        updateHeight,
+        updateMode,
+        updateLevel
+      }}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        </Stack>
+      </appContext.Provider>
     </ThemeProvider>
   );
 }
