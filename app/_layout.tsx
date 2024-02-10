@@ -53,15 +53,17 @@ function RootLayoutNav() {
   const [toDos, setToDos] = useState<toDos[]>()
   const [width, setWidth] = useState<number>(0)
   const [height, setHeight] = useState<number>(0)
-  const [isParent, setIsparent] = useState<boolean>()
-  const [level, setLevel] = useState<number>()
+  const [isParent, setIsparent] = useState<boolean>(false)
+  const [level, setLevel] = useState<number>(0)
+  const [currentTask, setCurrentTask] = useState<toDos>()
+  const [intent, setIntent] = useState<boolean>(false)
 
   const addToDo = (task:toDos) => {
-    setToDos(prevArrray => prevArrray?.concat(task))
+    setToDos(prevArray => [...(prevArray || []), task]);
   }
 
   const removeToDo = (task:toDos) => {
-    setToDos(toDos?.filter(item => item.id != task.name))
+    setToDos(toDos?.filter(item => item.id != task.id))
   }
 
   const updateWidth = () => {
@@ -72,14 +74,21 @@ function RootLayoutNav() {
     setHeight(prev => prev + 1)
   }
 
-  const updateMode = (userMode:boolean) => {
-    setIsparent(userMode)
+  const updateMode = () => {
+    setIsparent(prev => !prev)
   }
 
-  const updateLevel = (newLevel:number) => {
-    setLevel(newLevel)
+  const updateLevel = () => {
+    setLevel(prev => prev + 1)
+  }
+  const updateTask = (task:toDos) => {
+    setCurrentTask(task)
   }
 
+  const updateIntent = () => {
+    setIntent(prev => !prev)
+    console.log(intent)
+  }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -89,12 +98,16 @@ function RootLayoutNav() {
         height,
         isParent,
         level,
+        currentTask,
+        intent,
         addToDo,
         removeToDo,
         updateWidth,
         updateHeight,
         updateMode,
-        updateLevel
+        updateLevel,
+        updateTask,
+        updateIntent
       }}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
