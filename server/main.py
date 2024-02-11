@@ -76,7 +76,7 @@ async def websoc(websocket : WebSocket):
         print("begin")
         try:
             res: PlayerAction = await websocket.receive_json()
-        except e:
+        except Exception:
             return
         try:
             print("got this message")
@@ -100,7 +100,7 @@ async def websoc(websocket : WebSocket):
                 print("attack")
                 
                 print(bool(opponent))
-                attack_strength = random.randint(0, 15)
+                attack_strength = random.randint(0, 3)
                 defense = opponent.defense
                 opponent.health -= attack_strength + defense
                 if opponent.health < 0:
@@ -108,18 +108,18 @@ async def websoc(websocket : WebSocket):
                 else:
                     manager.state = GameState(type="continue", turn_id=opponent.id, player_info=[sender, opponent])
                 print(f"attack successful, health is now {opponent.health}")
-                await broadcast(players, manager.state.model_dump())
-            if res.action == "run":
-                rand = random.randint(0 + sender.level, 9 + sender.level)
+                # await broadcast(players, manager.state.model_dump())
+            elif res.action == "run":
+                rand = random.randint(0 , 2 )
                 if rand < 3:
                     manager.state = GameState(type= "game_end", turn_id=opponent.id, player_info=[sender, opponent], game_end=True)
                 else:
                     manager.state = GameState(type= "continue", turn_id=opponent.id, player_info=[sender, opponent])
-                await broadcast(players, manager.state.model_dump())
 
-            if res.action == "defend":
+            elif res.action == "defend":
                 manager.state = GameState(type="continue",turn_id=opponent.id, player_info=[sender, opponent])
 
+            await broadcast(players, manager.state.model_dump())
             if (len(players) < 2):
                 continue
             print("Ret")
