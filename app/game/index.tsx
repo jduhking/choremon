@@ -20,6 +20,7 @@ const Game = () => {
   };
   const [gameState, setGameState] = useState<GameState>(initialState);
   const [waiting, setWaiting] = useState<boolean>(true);
+  const [gameEnd, setGameEnd] = useState<boolean>(false);
   const [isTurn, setIsTurn] = useState<boolean>(true);
 
   const updateGameState = (newState: GameState) => {
@@ -93,6 +94,8 @@ const Game = () => {
             } else {
               // if it is not my turn then deal damage to me
             }
+          case "game_end": 
+            
 
             
 
@@ -112,8 +115,7 @@ const Game = () => {
       {
         waiting ? (<View style={{ flex: 1}}>
           <Text style={{ fontSize: 32}}>Waiting for opponent...</Text>
-        </View>) :
-
+        </View>) : gameEnd ? 
         (<View style={{ flex: 1}}>
           <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
             <View>
@@ -139,7 +141,10 @@ const Game = () => {
               <Text>Defend</Text>
             </Pressable>
           </View>
-        </View>)
+        </View>) : 
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Text>Game Over!</Text>
+        </View>
         }
 
     </View>
