@@ -3,7 +3,8 @@ export interface toDos{
     id: string,
     child_check: boolean,
     parent_check: boolean,
-    difficulty: number
+    difficulty: 1 | 2 | 3 | 4 | 5,
+    selected?: boolean
 }
 
 export interface app{
@@ -21,7 +22,7 @@ export type appProvider = {
     level: number | undefined,
     currentTask: toDos | undefined,
     intent: boolean | undefined
-    addToDo: (task: toDos) => void,
+    addToDo: (tasks: toDos) => void,
     removeToDo: (task: toDos) => void,
     updateWidth: () => void,
     updateHeight: () => void,

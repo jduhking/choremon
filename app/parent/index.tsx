@@ -3,17 +3,32 @@ import { View, Button, Pressable } from "react-native";
 import { Text } from "@/components/Themed";
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import "react-native-get-random-values";
-
+import { useContext, useEffect } from "react";
+import { appContext } from "../_layout";
+import { toDos } from "@/types";
 import { v4 as uuidv4 } from "uuid";
+import { appProvider } from "@/types";
 
 type TempType = { name: string; selected: boolean; id: string };
 const AddTask = () => {
-  const [tasks, setTask] = useState<TempType[]>([
-    { name: "Trash", selected: false, id: uuidv4() },
-    { name: "Clean", selected: false, id: uuidv4() },
-    { name: "Laundry", selected: false, id: uuidv4() },
+  const [tasks, setTask] = useState<toDos[]>([
+    { name: "Trash", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
+    { name: "Clean", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
+    { name: "Laundry", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
   ]);
-  const [selectedTask, setSelectedTask] = useState<TempType[]>([]);
+
+  const [tempTasks, setTempTasks] = useState<toDos[]>()
+
+
+  const {toDos, addToDo, removeToDo, currentTask, intent, updateIntent, updateTask} = useContext(appContext) as appProvider
+  //const [selectedTask, setSelectedTask] = useState<TempType[]>([]);
+
+  useEffect(()=>{
+    if (intent == true) {
+      removeToDo(currentTask as toDos)
+    }
+  },[intent])
+
   return (
     <View>
       <View>
@@ -21,16 +36,19 @@ const AddTask = () => {
           <Pressable
             key={index}
             onPress={() => {
-              const newTask = {
-                name: task.name,
-                selected: !task.selected,
-                id: task.id,
-              };
-              tasks[index] = newTask;
-              setTask([...tasks]);
+              task.selected = !task.selected
+              task.id = uuidv4()
+              setTask([...tasks])
+              if (task.selected == true){
+                setTempTasks(prevArray => [...(prevArray || []), task])
+              }
+              if (task.selected == false){
+                setTempTasks(tempTasks?.filter(item => item.id != task.id))
+              }
             }}
             style={{
               borderWidth: 2,
+              
             }}
             onLongPress={() => {}}
           >
@@ -49,32 +67,32 @@ const AddTask = () => {
       </View>
       <View>
         <Button
-          onPress={() => {
-            setSelectedTask([
-              ...selectedTask,
-              ...tasks.filter((tasks) => tasks.selected == true),
-            ]);
-            setTask([
-              ...tasks.map((task) => {
-                return { name: task.name, id: uuidv4(), selected: false };
-              }),
-            ]);
-          }}
+          onPress={()=> {
+              tempTasks?.map((task)=>{addToDo(task)})
+              tasks.map((task) => {
+                task.selected = false
+              })
+              setTempTasks([])
+            }
+          }
           title="+"
         />
       </View>
       <View>
-        {selectedTask.map((task, index) => (
-          <View key={index} style={{flexDirection : "row"}}>
+        {toDos?.map((task, id) => (
+          <View key={id} style={{flexDirection : "row"}}>
             <Text style={{flex : 1}}>{task.name}</Text>
-            <Pressable style={{paddingHorizontal : "2%"}}>
+            <Pressable style={{paddingHorizontal : "2%"}}
+              onPress={() =>
+                {updateTask(task)
+                updateIntent()}}
+            >
               <Ionicons name="checkmark" size={24} color="white" />
             </Pressable>
             <Pressable
               onPress={() =>
-                setSelectedTask([
-                  ...selectedTask.filter((val) => val.id != task.id),
-                ])
+                {updateTask(task)
+                updateIntent()}
               }
               style={{paddingHorizontal : "2%"}}
             >
