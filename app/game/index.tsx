@@ -95,6 +95,7 @@ const Game = () => {
             console.log(opponentHealth);
             setOpponentHealth(opponentHealth);
             setWaiting(false);
+            break;
           case "continue":
             // check whose turn it is
             const myTurn: boolean = state.turn_id === id;
@@ -103,15 +104,13 @@ const Game = () => {
             } else {
               // if it is not my turn then deal damage to me if I am attacked
             }
+            break;
           case "game_end":
             // set the game to game over
             setGameEnd(true);
-
             // get the winner
-
             // route to the game over screen with the winner.
-            router.replace("/");
-
+            router.replace("/gameover/");
             ws.close();
         }
       });
