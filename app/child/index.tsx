@@ -21,13 +21,22 @@ import { Entypo } from "@expo/vector-icons";
 StatusBar.setBarStyle("dark-content");
 
 const Child = () => {
-    const{barNum, level, updateLevel, toDos, removeToDo, updateChildCheck, choremon} = useContext(appContext) as appProvider
-    const [selectItem, setSelectItem] = useState<toDos>()
-    const [visible, setVisible] = useState(false)
-    const [isChecked, setIschecked] = useState<boolean>()
-    const router = useRouter();
-
+  const {
+    barNum,
+    level,
+    updateLevel,
+    toDos,
+    choremon,
+    removeToDo,
+    updateChildCheck,
+  } = useContext(appContext) as appProvider;
+  const [selectItem, setSelectItem] = useState<toDos>();
+  const [visible, setVisible] = useState(false);
+  const [isChecked, setIschecked] = useState<boolean>();
+  const router = useRouter();
   const renderItem = ({ item }: { item: toDos }) => {
+
+    let checkedVisible:boolean = false
     return (
       <>
         <TouchableOpacity
@@ -55,30 +64,41 @@ const Child = () => {
             />
           </ImageBackground>
         </TouchableOpacity>
-        <Modal visible={visible} animationType="slide" transparent={true}>
-          <View
+        <Modal visible={visible} animationType='slide' transparent={true}>
+          <ImageBackground
             style={{
               height: "40%",
-              backgroundColor: "#D9D9D9",
               marginTop: "auto",
               borderRadius: 30,
               alignItems: "center",
               justifyContent: "center",
             }}
+            source={require('../../assets/images/model_photo.jpg')}
+            imageStyle={{width:"100%", height:"100%", borderRadius:30, alignItems:'center', justifyContent:'center'}}
           >
-            <Text style={{ fontSize: 20, marginBottom: 15 }}>
+            <Text style={{ fontSize: 40, marginBottom: 30 , fontFamily:'Honk', textAlign:'center', flexDirection:'column'}}>
               Mark {selectItem?.name} as done?
               <Text> </Text>
-              <Checkbox
-                value={item.child_check}
-                onValueChange={() => {
-                  updateChildCheck(selectItem as toDos);
-                  setIschecked(true);
-                  setVisible(false);
-                }}
-              />
+              <TouchableOpacity onPress={()=>{
+                    checkedVisible = true
+                    updateChildCheck(selectItem as toDos);
+                    setVisible(false);
+              }}
+              style={{marginHorizontal:10}}
+              >
+                <Image
+                    source={require('../../assets/images/yes.png')}
+                    style={{width:80, height:60,}}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={()=> setVisible(false)}>
+                <Image
+                    source={require('../../assets/images/no.png')}
+                    style={{width:80, height:60,}}
+                />
+              </TouchableOpacity>
             </Text>
-          </View>
+          </ImageBackground>
         </Modal>
       </>
     );
@@ -103,7 +123,7 @@ const Child = () => {
             justifyContent: "space-between",
           }}
         >
-          <Text style={{ fontSize: 20 }}>Choremon</Text>
+          <Text style={{ fontSize: 50, fontFamily:'Honk' }}>Choremon</Text>
           <View style={{ flexDirection: "row" }}>
             <MaterialCommunityIcons
               name="account-multiple"
@@ -127,6 +147,7 @@ const Child = () => {
           >
             <Progress.Bar
               progress={barNum}
+              color="#cf352e"
               width={300}
               height={40}
               style={{
@@ -136,7 +157,7 @@ const Child = () => {
                 top: 200,
               }}
             />
-            <Text style={{ fontSize: 20 }}>level {level}</Text>
+            <Text style={{ fontSize: 30 , fontFamily:'Honk', top:-8}}>level {level}</Text>
           </View>
           <View
             style={{
@@ -145,7 +166,7 @@ const Child = () => {
               justifyContent: "center",
             }}
           >
-            <Text style={{ fontSize: 30, marginBottom: 20 }}>Taylor</Text>
+            <Text style={{ fontSize: 50, fontFamily:'Honk' }}>{choremon?.type}</Text>
             {choremon && (
               <Image
                 source={choremon.images[(level as number)! - 1] as any}
@@ -157,7 +178,7 @@ const Child = () => {
         </View>
       </View>
       <View style={{ flex: 2.5, alignItems: "center" }}>
-        <Text style={{ fontSize: 25, marginBottom: 20 }}>Chores</Text>
+        <Text style={{ fontSize: 50, marginBottom: 20, fontFamily:'Honk' }}>Chores</Text>
         {toDos && (
           <FlatList
             data={toDos}
@@ -170,7 +191,10 @@ const Child = () => {
       </View>
       <View style={{ position: "absolute", bottom: "40%", right: "30%" }}>
         <TouchableOpacity onPress={() => router.push("/game/")}>
-          <Text style={{ fontSize: 32 }}>FIGHT</Text>
+            <Image
+                source={require('../../assets/images/play.png')}
+                style={{width:130, height:60, marginTop:12, left:28}}
+            />
         </TouchableOpacity>
       </View>
     </ImageBackground>
