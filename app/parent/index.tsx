@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Button, Pressable } from "react-native";
 import { Text } from "@/components/Themed";
-import { Entypo, Ionicons } from "@expo/vector-icons";
+import { Entypo, Ionicons, Octicons } from "@expo/vector-icons";
 import "react-native-get-random-values";
 import { useContext, useEffect } from "react";
 import { appContext } from "../_layout";
@@ -30,8 +30,19 @@ const AddTask = () => {
   },[intent])
 
   return (
-    <View>
-      <View>
+    <View style={{ alignItems: "center" }}>
+      <View style={{ width: "70%", paddingTop: "5%", paddingBottom : "3%" }}>
+        <Text style={{ fontSize: 18 }}>Chores</Text>
+      </View>
+      <View
+        style={{
+          alignItems: "center",
+          backgroundColor: "#424242",
+          width: "80%",
+          paddingVertical: "2%",
+          borderRadius: 9,
+        }}
+      >
         {tasks.map((task, index) => (
           <Pressable
             key={index}
@@ -53,7 +64,7 @@ const AddTask = () => {
             onLongPress={() => {}}
           >
             <View
-              style={{ backgroundColor: task.selected ? "#FFFFFF" : "#000000" }}
+              style={{ backgroundColor: task.selected ? "#FFA500" : undefined }}
             >
               <Text
                 lightColor="rgba(0,0,0,0.8)"
@@ -94,7 +105,7 @@ const AddTask = () => {
                 {updateTask(task)
                 updateIntent()}
               }
-              style={{paddingHorizontal : "2%"}}
+              style={{ paddingHorizontal: "2%" }}
             >
               <Entypo name="cross" size={24} color="white" />
             </Pressable>
