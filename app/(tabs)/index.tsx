@@ -6,22 +6,32 @@ import { truncate } from 'fs';
 import useTodo from '@/hooks/usetodo';
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 
 export default function TabOneScreen() {
+  
+  const {choremon} = useContext(appContext) as appProvider
+
+  const router = useRouter();
+
+  const handleChildRoute = () => {
+    if(choremon){
+      router.push('/child/')
+    } else {
+      router.push('/child/selection')
+    }
+  }
   return (
     <View style={styles.container}>
       <Text style={{fontSize:30}}>Choose Mode</Text>
       <View style={{width:'100%', height:'10%', flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
-        <TouchableOpacity style={{backgroundColor:'orange', width:"20%", height:40, alignItems:'center', justifyContent:'center', borderRadius:8, marginHorizontal:6}}>
-          <Link href="/parent/">
+        <TouchableOpacity style={{backgroundColor:'orange', width:"20%", height:40, alignItems:'center', justifyContent:'center', borderRadius:8, marginHorizontal:6}}
+        onPress={() => router.push('/parent/')}>
               <Text style={{color:"black"}}>parent</Text>
-          </Link>
         </TouchableOpacity>
-        <TouchableOpacity style={{backgroundColor:'blue', width:"20%", height:40, alignItems:'center', justifyContent:'center', borderRadius:8, marginHorizontal:6}}>
-          <Link href="/child/">
+        <TouchableOpacity style={{backgroundColor:'blue', width:"20%", height:40, alignItems:'center', justifyContent:'center', borderRadius:8, marginHorizontal:6}}
+        onPress={handleChildRoute}>
               <Text>Child</Text>
-          </Link>
         </TouchableOpacity>
       </View>
     </View>

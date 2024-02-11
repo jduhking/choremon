@@ -57,7 +57,7 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   const [id, setId] = useState<string>(v4());
-  const [choremon, setChoremon] = useState<Choremon | undefined>(ChoremonData[0])
+  const [choremon, setChoremon] = useState<Choremon | undefined>(undefined)
   const [toDos, setToDos] = useState<toDos[]>()
   const [width, setWidth] = useState<number>(0)
   const [height, setHeight] = useState<number>(0)
