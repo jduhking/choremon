@@ -2,6 +2,7 @@ import { Action, ActionType, GameState, appProvider } from "@/types";
 import { useState, useEffect, useContext, useMemo } from "react";
 import { View, Text, Pressable } from "react-native";
 import { appContext } from "../_layout";
+import { useRouter } from 'expo-router';
 
 const Game = () => {
 
@@ -10,6 +11,7 @@ const Game = () => {
   }, []);
 
   const { maxHealth, id } = useContext(appContext) as appProvider;
+  const router = useRouter();
 
   const initialState: GameState = {
     turn_id: undefined,
@@ -97,6 +99,12 @@ const Game = () => {
           case "game_end": 
             // set the game to game over
             setGameEnd(true)
+
+            // get the winner 
+
+            // route to the game over screen with the winner.
+            router.replace('/')
+            
             ws.close()        
         }
       });
@@ -133,12 +141,18 @@ const Game = () => {
               marginTop: "5%",
             }}
           >
-            <Pressable onPress={() => performAction("attack")}>
-              <Text>Attack</Text>
-            </Pressable>
-            <Pressable onPress={() => performAction("defend")}>
-              <Text>Defend</Text>
-            </Pressable>
+            {
+              isTurn && (
+                <>
+                  <Pressable onPress={() => performAction("attack")}>
+                  <Text>Attack</Text>
+                </Pressable>
+                <Pressable onPress={() => performAction("defend")}>
+                  <Text>Defend</Text>
+                </Pressable>
+              </>
+              )
+            }
           </View>
         </View>) : 
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>

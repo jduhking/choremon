@@ -17,6 +17,7 @@ export interface app{
 export interface PlayerInfo {
     id: string,
     health: number,
+    defense: number,
 }
 
 export type appProvider = {
