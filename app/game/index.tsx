@@ -7,17 +7,18 @@ import {
   useRef,
   ReactNode,
 } from "react";
-import { View, Text, Pressable, Animated, Button } from "react-native";
+import { View, Text, Pressable, Animated, Button, Image } from "react-native";
 import { appContext } from "../_layout";
 import { useRouter } from "expo-router";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
+import { ChoremonData, ChoremonType } from "@/constants/Choremon";
 const Game = () => {
   const ws = useMemo(() => {
     return new WebSocket("https://testing.rondevu.app/ws");
   }, []);
 
-  const { maxHealth, id } = useContext(appContext) as appProvider;
+  const { maxHealth, id, choremon, level } = useContext(appContext) as appProvider;
   const router = useRouter();
 
   const initialState: GameState = {
@@ -29,7 +30,7 @@ const Game = () => {
   const [gameState, setGameState] = useState<GameState>(initialState);
   const [waiting, setWaiting] = useState<boolean>(true);
   const [gameEnd, setGameEnd] = useState<boolean>(false);
-  const [isTurn, setIsTurn] = useState<boolean>(true);
+  const [isTurn, setIsTurn] = useState<boolean>(false);
 
   const updateGameState = (newState: GameState) => {
     console.log("Receiving state object");
@@ -40,7 +41,7 @@ const Game = () => {
     maxHealth
   );
   const [opponentHealth, setOpponentHealth] = useState<number | undefined>(0);
-
+  const [opponentType, setOpponentType] = useState<ChoremonType | undefined>(undefined);
   const dealDamageToOpponent = (damage: number) => {
     // deal damage to opponent
     setOpponentHealth(opponentHealth! - damage);
@@ -63,6 +64,7 @@ const Game = () => {
       id: id,
     };
     ws.send(JSON.stringify(payload));
+    setIsTurn(false)
   };
 
   useEffect(() => {
@@ -75,6 +77,7 @@ const Game = () => {
           JSON.stringify({
             id: id,
             health: playerHealth,
+            type: choremon?.type
           })
         );
       });
@@ -103,6 +106,7 @@ const Game = () => {
               setIsTurn(true);
             } else {
               // if it is not my turn then deal damage to me if I am attacked
+              
             }
             break;
           case "game_end":
@@ -224,10 +228,25 @@ const Game = () => {
             style={{ flexDirection: "row", justifyContent: "space-around" }}
           >
             <View>
+            {choremon && (
+              <Image
+                source={choremon.images[(level as number)! - 1] as any}
+                width={256}
+                height={256}
+              />
+            )}
               <Text>Player</Text>
               <Text>Player Health: {playerHealth}</Text>
             </View>
             <View>
+              {
+                opponentType && (
+              <Image
+                  source={ChoremonData[opponentType === "Tony" ? 0 : 1].images[(level as number)! - 1] as any}
+                  width={128}
+                  height={128}
+                />)
+              }
               <Text>Opponent</Text>
               <Text>Opponent Health: {opponentHealth} </Text>
             </View>
