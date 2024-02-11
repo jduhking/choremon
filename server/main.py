@@ -152,7 +152,10 @@ async def websoc(websocket : WebSocket):
 
             elif res.action == "defend":
                 manager.state = GameState(type="continue",turn_id=opponent.id, player_info=[sender, opponent])
-
+            elif res.action == "heal":
+                health_gain = 5
+                sender.health += health_gain
+                manager.state = GameState(type="continue", turn_id=opponent.id, player_info=[sender, opponent])
             await broadcast(players, manager.state.model_dump())
             if (len(players) < 2):
                 continue

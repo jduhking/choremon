@@ -55,6 +55,19 @@ const useItem = () => {
     AsyncStorage.setItem("currency", value.toString());
     setCurrency(value);
   };
+  const consumePotion = () => {
+    if (potion <= 0) {
+      return;
+    }
+    saveHealPotionCount(potion - 1);
+  };
+  const consumeMana = () => {
+    if (mana <= 0) {
+      return;
+    }
+    saveManaPotionCount(mana - 1);
+  };
+
   getHealPotionCount().then((val) => {
     setPotion(val);
   });
@@ -74,6 +87,7 @@ const useItem = () => {
     potion,
     mana,
     currency,
+    consumePotion,
   };
 };
 

@@ -29,6 +29,7 @@ import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { ChoremonData, ChoremonType } from "@/constants/Choremon";
 import * as Progress from "react-native-progress";
+import useItem from "@/hooks/useItem";
 
 const Game = () => {
   const ws = useMemo(() => {
@@ -145,8 +146,7 @@ const Game = () => {
               console.log("its my turn");
               console.log(me.health);
               console.log(myMaxHealth.current);
-              
-              
+
               setPlayerHealth(me.health);
               setIsTurn(true);
             } else {
@@ -267,6 +267,10 @@ const Game = () => {
       </Animated.View>
     );
   };
+
+  const { consumePotion } = useItem();
+
+  const [itemView, setItemView] = useState(false);
   return (
     <ImageBackground
       style={{ flex: 1, backgroundColor: "white", paddingTop: "20%" }}
@@ -286,13 +290,12 @@ const Game = () => {
               {choremon && (
                 <>
                   <Progress.Bar
-                    progress={
-                      playerHealth! / myMaxHealth.current
-                    }
+                    progress={playerHealth! / myMaxHealth.current}
                     width={150}
                     height={20}
                     color="#ec273f"
                   />
+                  
                   <Image
                     source={choremon.images[(level as number)! - 1] as any}
                     style={{
@@ -303,15 +306,13 @@ const Game = () => {
                 </>
               )}
             </View>
-            <View
+            <View 
               style={{ flex: 1, position: "absolute", top: "23%", right: "5%" }}
             >
               {opponentType && (
                 <>
                   <Progress.Bar
-                    progress={
-                      opponentHealth! / opponentMaxHealth.current
-                    }
+                    progress={opponentHealth! / opponentMaxHealth.current}
                     width={150}
                     height={20}
                     color="#5ab552"
@@ -342,40 +343,82 @@ const Game = () => {
         )}
         {isTurn && (
           <View style={{ position: "absolute", bottom: 5 }}>
-            <View>
-              <TouchableOpacity
-                onPress={() => {
-                  performAction("attack");
-                }}
-              >
-                <Image
-                  source={require("../../assets/images/buttons/attack.png")}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  performAction("defend");
-                }}
-              >
-                <Image
-                  source={require("../../assets/images/buttons/defend.png")}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity
-              onPress={() => {
-                performAction("run");
-              }}
-            >
-              <Image
-                source={require("../../assets/images/buttons/run.png")}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
+            {itemView ? (
+              <View>
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      performAction("attack");
+                    }}
+                  >
+                    <Image
+                      source={require("../../assets/images/buttons/attack.png")}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      performAction("defend");
+                    }}
+                  >
+                    <Image
+                      source={require("../../assets/images/buttons/defend.png")}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      performAction("run");
+                    }}
+                  >
+                    <Image
+                      source={require("../../assets/images/buttons/run.png")}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                </View>
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setItemView(true);
+                    }}
+                  >
+                    <Image
+                      source={require("../../assets/images/buttons/items.png")}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ) : (
+              <View>
+                <TouchableOpacity
+                  onPress={() => {
+                    performAction("heal");
+                    consumePotion();
+                    setItemView(false);
+                  }}
+                >
+                  <Image
+                    source={require("../../assets/images/buttons/heal.png")}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    setItemView(false);
+                  }}
+                >
+                  <Image
+                    source={require("../../assets/images/buttons/mana.png")}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         )}
+        webp
       </>
     </ImageBackground>
   );
