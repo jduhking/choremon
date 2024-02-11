@@ -11,7 +11,7 @@ StatusBar.setBarStyle('dark-content')
 
 
 const Child = () => {
-    const{barNum, level, updateLevel, toDos, removeToDo} = useContext(appContext) as appProvider
+    const{barNum, level, updateLevel, toDos, removeToDo, updateChildCheck} = useContext(appContext) as appProvider
     const [selectItem, setSelectItem] = useState<toDos>()
     const [visible, setVisible] = useState(false)
     const [isChecked, setIschecked] = useState<boolean>()
@@ -19,7 +19,7 @@ const Child = () => {
     const renderItem = ({item}: {item: toDos}) => {
         return (
             <>
-                <TouchableOpacity style={{width:90, height:90, marginHorizontal:12, borderWidth:3, borderRadius:8, alignItems:'center', justifyContent:'center'}} onPress={()=> {setSelectItem(item) 
+                <TouchableOpacity style={{width:90, height:90, marginHorizontal:12, borderWidth:3, borderRadius:8, alignItems:'center', justifyContent:'center', opacity: item.child_check? 0.5 : 1}} disabled={item.child_check} onPress={()=> {setSelectItem(item) 
                 setVisible(true)}}>
                     <Image
                         source={item.image as ImageSourcePropType}
@@ -36,14 +36,10 @@ const Child = () => {
                         <Text>  </Text>
                         <Checkbox
                             value={item.child_check}
-                            onValueChange={()=>{setIschecked(true)
-                                removeToDo(selectItem as toDos)
+                            onValueChange={()=>{
+                                updateChildCheck(selectItem as toDos)
+                                setIschecked(true)
                                 setVisible(false)
-                                // let timeout
-
-                                // function myFunction() {
-                                //     timeout = setTimeout(()=>setVisible(false), 2000);
-                                //   }
                             }}
                         />
                         </Text>

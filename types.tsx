@@ -32,6 +32,8 @@ export type appProvider = {
     updateLevel: (remainder: number) => void,
     updateTask: (task: toDos) => void,
     updateIntent: (val: boolean) => void,
-    deleteToDo: (task: toDos) => void
+    deleteToDo: (task: toDos) => void,
+    updateChildCheck: (task: toDos) => void,
+    updateParentCheck: (task: toDos) => void
 
 }

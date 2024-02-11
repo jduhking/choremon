@@ -100,6 +100,34 @@ function RootLayoutNav() {
     setIntent(val)
   }
 
+  const updateChildCheck = (task:toDos) => {
+    const updatedItems = toDos?.map(item => {
+      if (item.id === task.id) {
+        // Return a new object with 'completed' property toggled
+        return { ...item, child_check: true };
+      }
+      // Return unchanged object for other items
+      return item;
+    });
+
+    // Update state with the new array of items
+    setToDos(updatedItems);
+  }
+
+  const updateParentCheck = (task:toDos) => {
+    const updatedItems = toDos?.map(item => {
+      if (item.id === task.id) {
+        // Return a new object with 'completed' property toggled
+        return { ...item, parent_check: true };
+      }
+      // Return unchanged object for other items
+      return item;
+    });
+
+    // Update state with the new array of items
+    setToDos(updatedItems);
+  }
+
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <appContext.Provider value={{
@@ -119,7 +147,9 @@ function RootLayoutNav() {
         updateLevel,
         updateTask,
         updateIntent,
-        deleteToDo
+        deleteToDo,
+        updateParentCheck,
+        updateChildCheck
       }}>
         <Stack screenOptions={{headerShown:false}}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
