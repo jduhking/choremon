@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Button, Pressable } from "react-native";
 import { Text } from "@/components/Themed";
-import { Entypo, Ionicons } from "@expo/vector-icons";
+import { Entypo, Ionicons, Octicons } from "@expo/vector-icons";
 import "react-native-get-random-values";
 
 import { v4 as uuidv4 } from "uuid";
@@ -15,8 +15,24 @@ const AddTask = () => {
   ]);
   const [selectedTask, setSelectedTask] = useState<TempType[]>([]);
   return (
-    <View>
-      <View>
+    <View style={{ alignItems: "center" }}>
+      <View style={{ alignItems: "center", paddingVertical: "5%" }}>
+        <Text
+          lightColor="rgba(0,0,0,0.8)"
+          darkColor="rgba(255,255,255,0.8)"
+          style={{ fontSize: 24 }}
+        >
+          Chores
+        </Text>
+      </View>
+      <View
+        style={{
+          alignItems: "center",
+          backgroundColor: "grey",
+          width: "80%",
+          paddingVertical: "2%",
+        }}
+      >
         {tasks.map((task, index) => (
           <Pressable
             key={index}
@@ -30,12 +46,17 @@ const AddTask = () => {
               setTask([...tasks]);
             }}
             style={{
-              borderWidth: 2,
+              width: "95%",
+              alignItems: "center",
+              paddingVertical: "2%",
+              marginVertical: "1%",
+              backgroundColor: task.selected ? "#FFA500" : "#000",
+              borderRadius : 9
             }}
             onLongPress={() => {}}
           >
             <View
-              style={{ backgroundColor: task.selected ? "#FFFFFF" : "#000000" }}
+              style={{ backgroundColor: task.selected ? "#FFA500" : undefined, }}
             >
               <Text
                 lightColor="rgba(0,0,0,0.8)"
@@ -47,8 +68,9 @@ const AddTask = () => {
           </Pressable>
         ))}
       </View>
-      <View>
-        <Button
+
+      <View style={{ minWidth: "50%" }}>
+        <Pressable
           onPress={() => {
             setSelectedTask([
               ...selectedTask,
@@ -60,14 +82,25 @@ const AddTask = () => {
               }),
             ]);
           }}
-          title="+"
-        />
+          style={{
+            paddingVertical: "1%",
+            backgroundColor: "grey",
+            alignItems: "center",
+            marginVertical: "3%",
+            borderRadius: 999,
+          }}
+        >
+          <Octicons name="plus" size={24} color="white" />
+        </Pressable>
       </View>
       <View>
+        <Text style={{ fontSize: 18 }}>Progress</Text>
+      </View>
+      <View style={{ width: "80%", backgroundColor: "grey", borderRadius : 5 , padding : "2%"}}>
         {selectedTask.map((task, index) => (
-          <View key={index} style={{flexDirection : "row"}}>
-            <Text style={{flex : 1}}>{task.name}</Text>
-            <Pressable style={{paddingHorizontal : "2%"}}>
+          <View key={index} style={{ flexDirection: "row", paddingVertical : "1%", marginVertical : "2%", backgroundColor : "#000", borderRadius : 9 }}>
+            <Text style={{ flex: 1, paddingLeft : "5%" }}>{task.name}</Text>
+            <Pressable style={{ paddingHorizontal: "2%" }}>
               <Ionicons name="checkmark" size={24} color="white" />
             </Pressable>
             <Pressable
@@ -76,7 +109,7 @@ const AddTask = () => {
                   ...selectedTask.filter((val) => val.id != task.id),
                 ])
               }
-              style={{paddingHorizontal : "2%"}}
+              style={{ paddingHorizontal: "2%" }}
             >
               <Entypo name="cross" size={24} color="white" />
             </Pressable>
