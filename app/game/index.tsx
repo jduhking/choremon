@@ -18,7 +18,7 @@ const Game = () => {
     return new WebSocket("https://testing.rondevu.app/ws");
   }, []);
 
-  const { maxHealth, id, choremon, level } = useContext(appContext) as appProvider;
+  const { maxHealth, id, choremon, level, defense } = useContext(appContext) as appProvider;
   const router = useRouter();
 
   const initialState: GameState = {
@@ -77,7 +77,9 @@ const Game = () => {
           JSON.stringify({
             id: id,
             health: playerHealth,
-            type: choremon?.type
+            defense: defense,
+            type: choremon?.type,
+            level: level
           })
         );
       });
