@@ -186,7 +186,7 @@ function RootLayoutNav() {
         updateIntent,
         updateMaxHealth,
         updateDefense,
-        updateSpeed
+        updateSpeed,
         deleteToDo,
         updateParentCheck,
         updateChildCheck,

@@ -7,6 +7,7 @@ import { appContext } from '../_layout';
 import * as Progress from 'react-native-progress'
 import { appProvider, toDos } from '@/types'
 import Checkbox from 'expo-checkbox';
+import { useRouter } from 'expo-router';
 
 StatusBar.setBarStyle('dark-content')
 
@@ -16,6 +17,7 @@ const Child = () => {
     const [selectItem, setSelectItem] = useState<toDos>()
     const [visible, setVisible] = useState(false)
     const [isChecked, setIschecked] = useState<boolean>()
+    const router = useRouter();
 
     const renderItem = ({item}: {item: toDos}) => {
         return (
@@ -84,9 +86,8 @@ const Child = () => {
                         />
                         )
                     }
-                   
-                    
                 </View>
+               
             </View>
         </View>
         <View style={{flex:2.5, alignItems:'center'}}>
@@ -98,6 +99,13 @@ const Child = () => {
                 horizontal={true}
                 style={{width:'100%', position:'relative'}}
              /> }      
+        </View>
+        <View style={{ position: 'absolute',
+    bottom: '40%', right: '30%'}}>
+            <TouchableOpacity
+                    onPress={() => router.push('/game/')}>
+                        <Text style={{ fontSize: 32}}>FIGHT</Text>
+            </TouchableOpacity>
         </View>
     </ImageBackground>
   )
