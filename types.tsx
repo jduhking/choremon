@@ -14,10 +14,9 @@ export interface app{
     tasks: toDos[]
 }
 
-export interface PlayerStats {
-    maxHealth: number;
-    defense: number;
-    speed: number;
+export interface PlayerInfo {
+    id: string,
+    health: number,
 }
 
 export type appProvider = {
@@ -45,9 +44,8 @@ export type appProvider = {
 }
 
 export interface GameState { 
-    loseHealth: number;
-    gameEnd: boolean;
-    turnId: string | undefined;
+    turnId: string | undefined,
+    players: PlayerInfo[],
 }
 
 export type ActionType = "attack" | "defend"
