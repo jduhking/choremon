@@ -14,12 +14,13 @@ StatusBar.setBarStyle('dark-content')
 type TempType = { name: string; selected: boolean; id: string };
 const AddTask = () => {
   const [tasks, setTask] = useState<toDos[]>([
-    { image:require('../../assets/images/trash.png'),name: "Trash", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:1},
-    { image:require('../../assets/images/mow_lawn.png'), name: "Mow lawn", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:3},
-    { image:require('../../assets/images/laundry.png'), name: "Laundry", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
-    { image:require('../../assets/images/dishes.png'), name: "Dishes", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:3},
-    { image:require('../../assets/images/clean_icon.png'), name: "Clean", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
-    { image:require('../../assets/images/hw_icon.png'), name: "Homework", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:5}
+    { image: icons["Trash"],name: "Trash", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:1},
+    { image: icons["Mow lawn"], name: "Mow lawn", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:3},
+    { image: icons["Laundry"], name: "Laundry", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
+    { image: icons["Dishes"], name: "Dishes", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:3},
+    { image: icons["Clean Bed"], name: "Clean Bed", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
+    { image: icons["Homework"], name: "Homework", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:5},
+    { image: icons["Read"], name: "Read", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:3}
   ]);
 
   const [tempTasks, setTempTasks] = useState<toDos[]>()
