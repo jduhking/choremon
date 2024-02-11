@@ -23,6 +23,7 @@ async def lifespan(app : FastAPI):
     pass
 
 class Task(Document):
+    id : str
     name: str
     child_check: bool = Field(default=False)
     parent_check: bool = Field(default=False)
