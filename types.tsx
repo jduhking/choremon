@@ -1,3 +1,5 @@
+import { Choremon } from "./constants/Choremon"
+
 export interface toDos{
     name: string
     id: string,
@@ -5,7 +7,7 @@ export interface toDos{
     parent_check: boolean,
     difficulty: 1 | 2 | 3 | 4 | 5,
     selected?: boolean
-    image:string
+    image: NodeRequire;
 }
 
 export interface app{
@@ -24,6 +26,7 @@ export type appProvider = {
     currentTask: toDos | undefined,
     intent: boolean | undefined,
     barNum: number | undefined,
+    choremon: Choremon | undefined,
     addToDo: (tasks: toDos) => void,
     removeToDo: (task: toDos) => void,
     updateWidth: () => void,
@@ -34,6 +37,7 @@ export type appProvider = {
     updateIntent: (val: boolean) => void,
     deleteToDo: (task: toDos) => void,
     updateChildCheck: (task: toDos) => void,
-    updateParentCheck: (task: toDos) => void
+    updateParentCheck: (task: toDos) => void,
+    selectChoremon: (choremon: Choremon) => void,
 
 }

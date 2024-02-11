@@ -1,5 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react'
-import { Text, View, Image, FlatList, TouchableOpacity, ImageSourcePropType } from 'react-native'
+import { Text, View, Image, FlatList, TouchableOpacity, ImageSourcePropType,
+ImageBackground } from 'react-native'
 import { StatusBar, Modal } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { appContext } from '../_layout';
@@ -11,7 +12,7 @@ StatusBar.setBarStyle('dark-content')
 
 
 const Child = () => {
-    const{barNum, level, updateLevel, toDos, removeToDo, updateChildCheck} = useContext(appContext) as appProvider
+    const{barNum, level, updateLevel, toDos, removeToDo, updateChildCheck, choremon } = useContext(appContext) as appProvider
     const [selectItem, setSelectItem] = useState<toDos>()
     const [visible, setVisible] = useState(false)
     const [isChecked, setIschecked] = useState<boolean>()
@@ -19,12 +20,19 @@ const Child = () => {
     const renderItem = ({item}: {item: toDos}) => {
         return (
             <>
-                <TouchableOpacity style={{width:90, height:90, marginHorizontal:12, borderWidth:3, borderRadius:8, alignItems:'center', justifyContent:'center', opacity: item.child_check? 0.5 : 1}} disabled={item.child_check} onPress={()=> {setSelectItem(item) 
+            
+                <TouchableOpacity style={{ width: 128, height: 128, marginHorizontal:20, alignItems:'center', justifyContent:'center', opacity: item.child_check? 0.5 : 1}} disabled={item.child_check} onPress={()=> {setSelectItem(item) 
                 setVisible(true)}}>
+                    <ImageBackground 
+                    source={require('../../assets/images/icons/widget.png')}
+                    style={{ width: 128, height: 128}}>
                     <Image
-                        source={item.image as ImageSourcePropType}
-                        style={{width:"90%", height:'90%'}}
-                    />
+                            source={item.image as any}
+                            style={{width:"90%", height:'90%'}}
+                        />
+                    </ImageBackground>
+                   
+                  
                 </TouchableOpacity>
                 <Modal
                     visible={visible}
@@ -51,7 +59,8 @@ const Child = () => {
       };
 
   return (
-    <View style={{flex:1, backgroundColor:'white', paddingTop:"15%", paddingHorizontal:'6%'}}>
+    <ImageBackground style={{flex:1, backgroundColor:'white', paddingTop:"15%", paddingHorizontal:'6%'}}
+    source={require('../../assets/images/backgrounds/background1.png')}>
         <View style={{flex: 5}}>
             <View style={{width:'100%', flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                 <Text style={{fontSize:20}}>Choremon</Text>
@@ -66,13 +75,16 @@ const Child = () => {
                 </View>
                 <View style={{width:'70%', alignItems:'center', justifyContent:'center'}}>
                     <Text style={{fontSize:30, marginBottom:20}}>Taylor</Text>
-                    <Image
-                        source={require('../../assets/images/c3bd278b8ec64126e0033e1437716616.png')}
-                        style={{
-                            width:220,
-                            height:220
-                        }}
-                    />
+                    {
+                        choremon && (
+                            <Image
+                            source={choremon.images[(level as number)! -1] as any}
+                            width={256}
+                            height={256}
+                        />
+                        )
+                    }
+                   
                     
                 </View>
             </View>
@@ -87,7 +99,7 @@ const Child = () => {
                 style={{width:'100%', position:'relative'}}
              /> }      
         </View>
-    </View>
+    </ImageBackground>
   )
 }
 

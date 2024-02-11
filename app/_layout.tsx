@@ -8,6 +8,7 @@ import { app, toDos, appProvider } from '@/types';
 
 
 import { useColorScheme } from '@/components/useColorScheme';
+import { Choremon, ChoremonData } from '@/constants/Choremon';
 export const appContext = createContext<appProvider | undefined>(undefined)
 
 export {
@@ -50,6 +51,7 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
+  const [choremon, setChoremon] = useState<Choremon | undefined>(ChoremonData[0])
   const [toDos, setToDos] = useState<toDos[]>()
   const [width, setWidth] = useState<number>(0)
   const [height, setHeight] = useState<number>(0)
@@ -128,6 +130,10 @@ function RootLayoutNav() {
     setToDos(updatedItems);
   }
 
+  const selectChoremon = (choremon: Choremon) => {
+    setChoremon(choremon)
+  }
+
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <appContext.Provider value={{
@@ -139,6 +145,7 @@ function RootLayoutNav() {
         currentTask,
         intent,
         barNum,
+        choremon,
         addToDo,
         removeToDo,
         updateWidth,
@@ -149,7 +156,8 @@ function RootLayoutNav() {
         updateIntent,
         deleteToDo,
         updateParentCheck,
-        updateChildCheck
+        updateChildCheck,
+        selectChoremon
       }}>
         <Stack screenOptions={{headerShown:false}}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
