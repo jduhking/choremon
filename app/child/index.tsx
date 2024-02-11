@@ -17,6 +17,7 @@ const Child = () => {
     const [isChecked, setIschecked] = useState<boolean>()
 
     const renderItem = ({item}: {item: toDos}) => {
+        let checkVisible = false;
         return (
             <>
                 <TouchableOpacity style={{width:90, height:90, marginHorizontal:12, borderWidth:3, borderRadius:8, alignItems:'center', justifyContent:'center', opacity: item.child_check? 0.5 : 1}} disabled={item.child_check} onPress={()=> {setSelectItem(item) 
@@ -35,8 +36,9 @@ const Child = () => {
                         <Text style={{fontSize:20, marginBottom: 15}}>Mark {selectItem?.name} as done?
                         <Text>  </Text>
                         <Checkbox
-                            value={item.child_check}
+                            value={checkVisible}
                             onValueChange={()=>{
+                                checkVisible = true
                                 updateChildCheck(selectItem as toDos)
                                 setIschecked(true)
                                 setVisible(false)
