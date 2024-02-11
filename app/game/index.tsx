@@ -1,4 +1,10 @@
-import { Action, ActionType, GameState, PlayerInfo, appProvider } from "@/types";
+import {
+  Action,
+  ActionType,
+  GameState,
+  PlayerInfo,
+  appProvider,
+} from "@/types";
 import {
   useState,
   useEffect,
@@ -7,7 +13,16 @@ import {
   useRef,
   ReactNode,
 } from "react";
-import { View, Text, Pressable, Animated, Button, Image, ImageBackground, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  Animated,
+  Button,
+  Image,
+  ImageBackground,
+  TouchableOpacity,
+} from "react-native";
 import { appContext } from "../_layout";
 import { useRouter } from "expo-router";
 import "react-native-get-random-values";
@@ -20,7 +35,9 @@ const Game = () => {
     return new WebSocket("https://testing.rondevu.app/ws");
   }, []);
 
-  const { maxHealth, id, choremon, level, defense } = useContext(appContext) as appProvider;
+  const { maxHealth, id, choremon, level, defense } = useContext(
+    appContext
+  ) as appProvider;
   const router = useRouter();
 
   const initialState: GameState = {
@@ -39,11 +56,16 @@ const Game = () => {
     console.log(newState);
   };
 
+  const opponentMaxHealth = useRef(0);
+  const myMaxHealth = useRef(0);
+
   const [playerHealth, setPlayerHealth] = useState<number | undefined>(
     maxHealth
   );
   const [opponentHealth, setOpponentHealth] = useState<number | undefined>(0);
-  const [opponentType, setOpponentType] = useState<ChoremonType | undefined>(undefined);
+  const [opponentType, setOpponentType] = useState<ChoremonType | undefined>(
+    undefined
+  );
   const dealDamageToOpponent = (damage: number) => {
     // deal damage to opponent
     setOpponentHealth(opponentHealth! - damage);
@@ -66,7 +88,7 @@ const Game = () => {
       id: id,
     };
     ws.send(JSON.stringify(payload));
-    setIsTurn(false)
+    // setIsTurn(false)
   };
 
   useEffect(() => {
@@ -81,7 +103,7 @@ const Game = () => {
             health: playerHealth,
             defense: defense,
             type: choremon?.type,
-            level: level
+            level: level,
           })
         );
       });
@@ -91,8 +113,16 @@ const Game = () => {
         const state: GameState = JSON.parse(val.data);
         console.log(state);
         const type = state.type;
-        console.log(Object.keys(state))
+        console.log(Object.keys(state));
         console.log("the type is " + type);
+        if (state.turn_id == id) {
+          setIsTurn(true);
+        } else {
+          setIsTurn(false);
+        }
+        const me = state.player_info.filter((player) => player.id === id)[0];
+        const them = state.player_info.filter((player) => player.id !== id)[0];
+
         switch (type) {
           case "init": // the game has begun, set the opponents health
             console.log("Init");
@@ -103,18 +133,27 @@ const Game = () => {
             const opponentType = opponent.type;
             console.log(opponentHealth);
             setOpponentHealth(opponentHealth);
-            setOpponentType(opponentType)
+            opponentMaxHealth.current = opponentHealth;
+            myMaxHealth.current = me.health;
+            setOpponentType(opponentType);
             setWaiting(false);
             break;
           case "continue":
             // check whose turn it is
             const myTurn: boolean = state.turn_id === id;
             if (myTurn) {
-              console.log('its my turn')
+              console.log("its my turn");
+              console.log(me.health);
+              console.log(myMaxHealth.current);
+              
+              
+              setPlayerHealth(me.health);
               setIsTurn(true);
             } else {
               // if it is not my turn then deal damage to me if I am attacked
-              console.log('its not my turn')
+              console.log("its not my turn");
+              setOpponentHealth(them.health);
+              // setPlayerHealth()
             }
             break;
           case "game_end":
@@ -229,103 +268,114 @@ const Game = () => {
     );
   };
   return (
-    <ImageBackground style={{ flex: 1, backgroundColor: "white", paddingTop: '20%' }}
-    source={require('../../assets/images/backgrounds/Battleground.png')}>
+    <ImageBackground
+      style={{ flex: 1, backgroundColor: "white", paddingTop: "20%" }}
+      source={require("../../assets/images/backgrounds/Battleground.png")}
+    >
       <>
-      {!gameEnd ? (
-        <>
-        <View style={{ flex: 1, position: 'absolute',
-        bottom: '38%',
-        left: '10%', }}>
-    
-            {choremon && (<>
-              <Progress.Bar
-                  progress={playerHealth}
-                  width={150}
-                  height={20}
-                  color="ec273f"
-                />
-              <Image
-                source={choremon.images[(level as number)! - 1] as any}
-                style={{ 
-                  width: 160,
-                  height: 160
-                }}
-              />
-            </>)}
-          </View>
-            <View style={{ flex: 1, position: 'absolute',
-        top: '40%',
-        right: '5%',}}>
-              {
-                opponentType && (
-                  <>
+        {!gameEnd ? (
+          <>
+            <View
+              style={{
+                flex: 1,
+                position: "absolute",
+                bottom: "42%",
+                left: "10%",
+              }}
+            >
+              {choremon && (
+                <>
                   <Progress.Bar
-                  progress={opponentHealth}
-                  width={150}
-                  height={20}
-                  color="#5ab552"
-                />
-              <Image
-                  source={ChoremonData[opponentType === "Tony" ? 0 : 1].images[(level as number)! - 1] as any}
-                  width={128}
-                  height={128}
-                  style={{
-                    width: 128,
-                    height: 128
-                  }}
-                />
-                </>)
-              }
-          </View>
+                    progress={
+                      playerHealth! / myMaxHealth.current
+                    }
+                    width={150}
+                    height={20}
+                    color="#ec273f"
+                  />
+                  <Image
+                    source={choremon.images[(level as number)! - 1] as any}
+                    style={{
+                      width: 160,
+                      height: 160,
+                    }}
+                  />
+                </>
+              )}
+            </View>
+            <View
+              style={{ flex: 1, position: "absolute", top: "23%", right: "5%" }}
+            >
+              {opponentType && (
+                <>
+                  <Progress.Bar
+                    progress={
+                      opponentHealth! / opponentMaxHealth.current
+                    }
+                    width={150}
+                    height={20}
+                    color="#5ab552"
+                  />
+                  <Image
+                    source={
+                      ChoremonData[opponentType === "Tony" ? 0 : 1].images[
+                        (level as number)! - 1
+                      ] as any
+                    }
+                    width={128}
+                    height={128}
+                    style={{
+                      width: 128,
+                      height: 128,
+                    }}
+                  />
+                </>
+              )}
+            </View>
           </>
-      ) : (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Text>Game Over!</Text>
-        </View>
-      )
-      }
-      {
-      isTurn && 
-      (
-        <View style={{ position: 'absolute',
-        bottom: 5}}>
-          <View>
+        ) : (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text>Game Over!</Text>
+          </View>
+        )}
+        {isTurn && (
+          <View style={{ position: "absolute", bottom: 5 }}>
+            <View>
+              <TouchableOpacity
+                onPress={() => {
+                  performAction("attack");
+                }}
+              >
+                <Image
+                  source={require("../../assets/images/buttons/attack.png")}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  performAction("defend");
+                }}
+              >
+                <Image
+                  source={require("../../assets/images/buttons/defend.png")}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            </View>
             <TouchableOpacity
-            onPress={() => {
-              performAction("defend")
-            }}>
-              <Image 
-              source={require('../../assets/images/buttons/attack.png')}
-              resizeMode="contain"
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-            onPress={() => {
-              performAction("defend")
-            }}>
-                <Image 
-              source={require('../../assets/images/buttons/defend.png')}
-              resizeMode="contain"
+              onPress={() => {
+                performAction("run");
+              }}
+            >
+              <Image
+                source={require("../../assets/images/buttons/run.png")}
+                resizeMode="contain"
               />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity
-          onPress={() => {
-            performAction("defend")
-          }}>
-              <Image 
-            source={require('../../assets/images/buttons/run.png')}
-            resizeMode="contain"
-
-            />
-          </TouchableOpacity>
-        </View>
-        
-      )
-        }
+        )}
       </>
     </ImageBackground>
   );

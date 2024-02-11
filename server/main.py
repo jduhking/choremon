@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from datetime import datetime
 import json
 import random
@@ -7,8 +8,41 @@ from xmlrpc.client import boolean
 from fastapi import FastAPI
 from fastapi import APIRouter, BackgroundTasks, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
+from beanie import Document, PydanticObjectId, init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app : FastAPI):
+    # before server starts
+    print("Hello")
+    await init(app)
+    yield
+
+    # before server ends
+    print("World")
+    pass
+
+class Task(Document):
+    name: str
+    child_check: bool = Field(default=False)
+    parent_check: bool = Field(default=False)
+    difficulty: int
+    ...
+
+async def init(app):
+    # connect to mongo
+    client = AsyncIOMotorClient("mongodb+srv://hdudsns:Wde6V6mDiOn1jwoI@cluster0.2citqsi.mongodb.net/?retryWrites=true&w=majority")
+    db = client.prod 
+    await init_beanie(database=db, document_models = [Task], allow_index_dropping=True)
+    try:
+        info = await client.server_info()
+        print(f"success, connected to {info}")
+    except Exception as e:
+        print(f"Failed with exception {e}")
+    pass
+
+
+app = FastAPI(lifespan=lifespan)
 class AuthMessage(BaseModel):
     id : str
     health : int
@@ -76,7 +110,7 @@ async def websoc(websocket : WebSocket):
         print("begin")
         try:
             res: PlayerAction = await websocket.receive_json()
-        except e:
+        except Exception:
             return
         try:
             print("got this message")
@@ -100,7 +134,7 @@ async def websoc(websocket : WebSocket):
                 print("attack")
                 
                 print(bool(opponent))
-                attack_strength = random.randint(0, 15)
+                attack_strength = random.randint(0, 3)
                 defense = opponent.defense
                 opponent.health -= attack_strength + defense
                 if opponent.health < 0:
@@ -108,18 +142,18 @@ async def websoc(websocket : WebSocket):
                 else:
                     manager.state = GameState(type="continue", turn_id=opponent.id, player_info=[sender, opponent])
                 print(f"attack successful, health is now {opponent.health}")
-                await broadcast(players, manager.state.model_dump())
-            if res.action == "run":
-                rand = random.randint(0 + sender.level, 9 + sender.level)
+                # await broadcast(players, manager.state.model_dump())
+            elif res.action == "run":
+                rand = random.randint(0 , 2 )
                 if rand < 3:
                     manager.state = GameState(type= "game_end", turn_id=opponent.id, player_info=[sender, opponent], game_end=True)
                 else:
                     manager.state = GameState(type= "continue", turn_id=opponent.id, player_info=[sender, opponent])
-                await broadcast(players, manager.state.model_dump())
 
-            if res.action == "defend":
+            elif res.action == "defend":
                 manager.state = GameState(type="continue",turn_id=opponent.id, player_info=[sender, opponent])
 
+            await broadcast(players, manager.state.model_dump())
             if (len(players) < 2):
                 continue
             print("Ret")
@@ -128,3 +162,33 @@ async def websoc(websocket : WebSocket):
         else:
             print("Not the right amount of people")
     ...
+
+
+@app.get("/tasks")
+async def get_tasks() -> List[Task]:
+    return await Task.find_all().to_list()
+
+@app.post("/publish")
+async def publish_task(task : Task) -> Task:
+    await task.save()
+    return task
+
+@app.post("/check")
+async def check_task(id : str, person : Literal["Parent", "Child"]) -> Task | None:
+    task = await Task.get(id)
+    if not task:
+        return None
+    if person == "Child":
+        task.child_check = True
+    else:
+        task.parent_check = True
+    await task.save()
+    return task
+
+@app.post("/delete")
+async def delete_task(id:str) ->Task | None:
+    task = await Task.get(id)
+    if task:
+        await task.delete()
+        return task
+    return None
