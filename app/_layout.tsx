@@ -30,6 +30,8 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     Honk: require('../assets/fonts/Honk-Regular.ttf'),
     Pokemon: require('../assets/fonts/PokemonGb-RAeo.ttf'),
+    Bosmatic: require('../assets/fonts/Bosmatic.ttf'),
+    Retro: require('../assets/fonts/Retro.ttf'),
     ...FontAwesome.font,
   });
 
