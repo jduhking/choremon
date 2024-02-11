@@ -1,4 +1,4 @@
-import { Action, ActionType, GameState, appProvider } from "@/types";
+import { Action, ActionType, GameState, PlayerInfo, appProvider } from "@/types";
 import {
   useState,
   useEffect,
@@ -94,11 +94,14 @@ const Game = () => {
         switch (type) {
           case "init": // the game has begun, set the opponents health
             console.log("Init");
-            const opponentHealth = state.player_info.filter((player) => {
+            const opponent: PlayerInfo = state.player_info.filter((player) => {
               return player.id !== id;
-            })[0].health;
+            })[0];
+            const opponentHealth = opponent.health;
+            const opponentType = opponent.type;
             console.log(opponentHealth);
             setOpponentHealth(opponentHealth);
+            setOpponentType(opponentType)
             setWaiting(false);
             break;
           case "continue":
