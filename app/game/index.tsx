@@ -84,6 +84,7 @@ const Game = () => {
         const state: GameState = JSON.parse(val.data);
         console.log(state);
         const type = state.type;
+        console.log(Object.keys(state))
         console.log("the type is " + type);
         switch (type) {
           case "init": // the game has begun, set the opponents health
@@ -218,28 +219,8 @@ const Game = () => {
     );
   };
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
-      {waiting ? (
-        <AnimationView attack={attack} hit={hit}>
-          <Text style={{ fontSize: 32 }}>Waiting for opponent...</Text>
-          <View style={{padding : 20}}>
-
-          <Button
-            onPress={() => {
-              toggleAttack();
-            }}
-            title="Trigger Attack"
-            
-          ></Button>
-          </View>
-          <Button
-            onPress={() => {
-              toggleHit();
-            }}
-            title="Trigger Hit"
-          ></Button>
-        </AnimationView>
-      ) : gameEnd ? (
+    <View style={{ flex: 1, backgroundColor: "white", paddingTop: '20%' }}>
+      {!gameEnd ? (
         <View style={{ flex: 1 }}>
           <View
             style={{ flexDirection: "row", justifyContent: "space-around" }}
