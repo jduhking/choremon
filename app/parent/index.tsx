@@ -8,26 +8,39 @@ import { appContext } from "../_layout";
 import { toDos } from "@/types";
 import { v4 as uuidv4 } from "uuid";
 import { appProvider } from "@/types";
+import { set } from "mongoose";
 
 type TempType = { name: string; selected: boolean; id: string };
 const AddTask = () => {
   const [tasks, setTask] = useState<toDos[]>([
-    { name: "Trash", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
-    { name: "Clean", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
-    { name: "Laundry", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
+    { image:require('../../assets/images/trash.png'),name: "Trash", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:1},
+    { image:require('../../assets/images/mow_lawn.png'), name: "Mow lawn", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:3},
+    { image:require('../../assets/images/laundry.png'), name: "Laundry", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
+    { image:require('../../assets/images/dishes.png'), name: "Dishes", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:3},
+    { image:require('../../assets/images/clean_icon.png'), name: "Clean", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
+    { image:require('../../assets/images/hw_icon.png'), name: "Homework", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:5}
   ]);
 
   const [tempTasks, setTempTasks] = useState<toDos[]>()
+  const [remove, setRemove] = useState(false)
 
 
-  const {toDos, addToDo, removeToDo, currentTask, intent, updateIntent, updateTask} = useContext(appContext) as appProvider
+  const {toDos, addToDo, removeToDo, currentTask, intent, updateIntent, updateTask, deleteToDo} = useContext(appContext) as appProvider
   //const [selectedTask, setSelectedTask] = useState<TempType[]>([]);
 
   useEffect(()=>{
     if (intent == true) {
       removeToDo(currentTask as toDos)
+      updateIntent(false)
     }
   },[intent])
+
+  useEffect(()=>{
+    if (remove == true) {
+      deleteToDo(currentTask as toDos)
+      setRemove(false)
+    }
+  },[remove])
 
   return (
     <SafeAreaView style={{ alignItems: "center" }}>
@@ -96,14 +109,14 @@ const AddTask = () => {
             <Pressable style={{paddingHorizontal : "2%"}}
               onPress={() =>
                 {updateTask(task)
-                updateIntent()}}
+                updateIntent(true)}}
             >
               <Ionicons name="checkmark" size={24} color="white" />
             </Pressable>
             <Pressable
               onPress={() =>
                 {updateTask(task)
-                updateIntent()}
+                setRemove(true)}
               }
               style={{ paddingHorizontal: "2%" }}
             >
