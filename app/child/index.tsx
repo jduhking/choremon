@@ -21,43 +21,11 @@ import { Entypo } from "@expo/vector-icons";
 StatusBar.setBarStyle("dark-content");
 
 const Child = () => {
-    const{barNum, level, updateLevel, toDos, removeToDo, updateChildCheck} = useContext(appContext) as appProvider
+    const{barNum, level, updateLevel, toDos, removeToDo, updateChildCheck, choremon} = useContext(appContext) as appProvider
     const [selectItem, setSelectItem] = useState<toDos>()
     const [visible, setVisible] = useState(false)
     const [isChecked, setIschecked] = useState<boolean>()
-
-    const renderItem = ({item}: {item: toDos}) => {
-        let checkVisible = false;
-        return (
-            <>
-                <TouchableOpacity style={{width:90, height:90, marginHorizontal:12, borderWidth:3, borderRadius:8, alignItems:'center', justifyContent:'center', opacity: item.child_check? 0.5 : 1}} disabled={item.child_check} onPress={()=> {setSelectItem(item) 
-                setVisible(true)}}>
-                    <Image
-                        source={item.image as ImageSourcePropType}
-                        style={{width:"90%", height:'90%'}}
-                    />
-                </TouchableOpacity>
-                <Modal
-                    visible={visible}
-                    animationType='slide'
-                    transparent={true}
-                >
-                    <View style={{height:'40%', backgroundColor:'#D9D9D9', marginTop: 'auto', borderRadius:30, alignItems:'center', justifyContent:'center'}}>
-                        <Text style={{fontSize:20, marginBottom: 15}}>Mark {selectItem?.name} as done?
-                        <Text>  </Text>
-                        <Checkbox
-                            value={checkVisible}
-                            onValueChange={()=>{
-                                checkVisible = true
-                                updateChildCheck(selectItem as toDos)
-                                setIschecked(true)
-                                setVisible(false)
-                            }}
-                        />
-                        </Text>
-                    </View>
-                </Modal>
-            </>
+    const router = useRouter();
 
   const renderItem = ({ item }: { item: toDos }) => {
     return (
