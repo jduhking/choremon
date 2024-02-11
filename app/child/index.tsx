@@ -1,22 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Text,
   View,
   Image,
   FlatList,
   TouchableOpacity,
-  ImageSourcePropType,
   ImageBackground,
-  Pressable,
 } from "react-native";
 import { StatusBar, Modal } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { appContext } from "../_layout";
 import * as Progress from "react-native-progress";
 import { appProvider, toDos } from "@/types";
-import Checkbox from "expo-checkbox";
 import { Link, useRouter } from "expo-router";
 import { Entypo } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 StatusBar.setBarStyle("dark-content");
 
@@ -34,6 +32,8 @@ const Child = () => {
   const [visible, setVisible] = useState(false);
   const [isChecked, setIschecked] = useState<boolean>();
   const router = useRouter();
+  const { top } = useSafeAreaInsets();
+
   const renderItem = ({ item }: { item: toDos }) => {
 
     let checkedVisible:boolean = false
@@ -76,7 +76,7 @@ const Child = () => {
             source={require('../../assets/images/model_photo.jpg')}
             imageStyle={{width:"100%", height:"100%", borderRadius:30, alignItems:'center', justifyContent:'center'}}
           >
-            <Text style={{ fontSize: 40, marginBottom: 30 , fontFamily:'Honk', textAlign:'center', flexDirection:'column'}}>
+            <Text style={{ fontSize: 40, marginBottom: 30 , fontFamily:'Retro', textAlign:'center', flexDirection:'column'}}>
               Mark {selectItem?.name} as done?
               <Text> </Text>
               <TouchableOpacity onPress={()=>{
@@ -110,10 +110,15 @@ const Child = () => {
         flex: 1,
         backgroundColor: "white",
         paddingTop: "15%",
-        paddingHorizontal: "6%",
+        
       }}
       source={require("../../assets/images/backgrounds/background1.png")}
     >
+    <Image 
+    source={require('../../assets/images/BGOs/topview.png')}
+    style={{
+        position: 'absolute', top: top
+   }}/>
       <View style={{ flex: 5 }}>
         <View
           style={{
@@ -123,7 +128,7 @@ const Child = () => {
             justifyContent: "space-between",
           }}
         >
-          <Text style={{ fontSize: 50, fontFamily:'Honk' }}>Choremon</Text>
+          <Text style={{ fontSize: 28, fontFamily:'Retro' }}>Choremon</Text>
           <View style={{ flexDirection: "row" }}>
             <MaterialCommunityIcons
               name="account-multiple"
@@ -166,7 +171,7 @@ const Child = () => {
               justifyContent: "center",
             }}
           >
-            <Text style={{ fontSize: 50, fontFamily:'Honk' }}>{choremon?.type}</Text>
+            <Text style={{ fontSize: 50, fontFamily:'Retro' }}>{choremon?.type}</Text>
             {choremon && (
               <Image
                 source={choremon.images[(level as number)! - 1] as any}
@@ -178,7 +183,7 @@ const Child = () => {
         </View>
       </View>
       <View style={{ flex: 2.5, alignItems: "center" }}>
-        <Text style={{ fontSize: 50, marginBottom: 20, fontFamily:'Honk' }}>Chores</Text>
+        <Text style={{ fontSize: 50, marginBottom: 20, fontFamily:'Retro' }}>Chores</Text>
         {toDos && (
           <FlatList
             data={toDos}

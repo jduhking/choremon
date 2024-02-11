@@ -83,8 +83,9 @@ const AddTask = () => {
 
   return (
     <ImageBackground style={{ alignItems: "center", flex:1}} source={require('../../assets/images/parentsbackground.png')}>
-      <View style={{marginTop: "12%", alignItems:'center', backgroundColor:'white',}}>
-        <Text style={{ fontFamily:'Honk', color:"#E31B4D", fontSize:60, fontWeight:'700' }}>Chores</Text>
+      <View style={{marginTop: "12%", alignItems:'center', backgroundColor:'white', borderRadius: 10, borderWidth: 4,
+    paddingHorizontal: '5%'}}>
+        <Text style={{ fontFamily:'Honk', color:"#000", fontSize:60, fontWeight:'700' }}>Chores</Text>
       </View>
       <View
         style={{
@@ -126,7 +127,7 @@ const AddTask = () => {
                 style={{width:"115%", height:"160%", position:'absolute', objectFit:'fill', right:-30, left:-21}}
               />
               <Text
-                style={{color:'black', fontSize:15, fontFamily:'Pokemon', fontWeight:'600'}}
+                style={{color:'black', fontSize:18, fontFamily:'Retro', fontWeight:'600'}}
               >
                 {task.name}
               </Text>

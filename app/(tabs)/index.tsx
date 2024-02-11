@@ -30,11 +30,11 @@ export default function TabOneScreen() {
         Are you?</Text></View>
       <View style={{width:'100%', height:'10%', flexDirection:'row', alignItems:'center', justifyContent:'space-around', marginTop: '10%' }}>
         
-        <TouchableOpacity style={{backgroundColor:'orange', width:"20%", paddingVertical: '5%', alignItems:'center', justifyContent:'center', borderRadius:8, marginHorizontal:6}}
+        <TouchableOpacity style={{backgroundColor:'orange', width:"30%", paddingVertical: '5%', alignItems:'center', paddingHorizontal: '5%', justifyContent:'center', borderRadius:8, marginHorizontal:6}}
         onPress={() => router.push('/parent/')}>
-              <Text style={{color:"black",fontFamily: 'Pokemon' }}>parent</Text>
+              <Text style={{color:"black",fontFamily: 'Pokemon',}}>parent</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{backgroundColor:'blue', width:"20%", alignItems:'center', justifyContent:'center', borderRadius:8, marginHorizontal:6,
+        <TouchableOpacity style={{backgroundColor:'blue', width:"30%", alignItems:'center', justifyContent:'center', borderRadius:8, marginHorizontal:6,
         paddingVertical: '5%'}}
         onPress={handleChildRoute}>
               <Text style={{color:"white",fontFamily: 'Retro' }}>Child</Text>
@@ -43,8 +43,7 @@ export default function TabOneScreen() {
       <View style={{ justifyContent: 'center', alignItems: 'center'}}>
         <Image 
         source={require('../../assets/images/choremons/tonylevel1.png')}
-        style={{ 
-
+        style={{
           width: 128,
           height: 128
         }}
