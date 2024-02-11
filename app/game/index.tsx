@@ -1,22 +1,25 @@
 import { Action, ActionType, GameState, appProvider } from "@/types";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useMemo } from "react";
 import { View, Text, Pressable } from "react-native";
 import { appContext } from "../_layout";
 
 const Game = () => {
-  const ws = new WebSocket("https://testing.rondevu.app/ws");
+  
+  const ws = useMemo(() => { 
+    return new WebSocket("https://testing.rondevu.app/ws")
+  }, []);
+
   const { maxHealth, id } = useContext(appContext) as appProvider;
 
   const initialState: GameState = {
-    turnId: undefined,
-    players: [],
+    turn_id: undefined,
+    game_end: false,
+    player_info: [],
+    type: "init"
+    
   };
   const [gameState, setGameState] = useState<GameState>(initialState);
-
-  const sendAction = (action: Action) => {
-    console.log("Send action " + action.actionType);
-    // send action to backend
-  };
+  const [waiting, setWaiting] = useState<boolean>(true);
 
   const updateGameState = (newState: GameState) => {
     console.log("Receiving state object");
@@ -27,7 +30,7 @@ const Game = () => {
     maxHealth
   );
   const [opponentHealth, setOpponentHealth] = useState<number | undefined>(
-    undefined
+    0
   );
 
   const dealDamageToOpponent = (damage: number) => {
@@ -42,14 +45,21 @@ const Game = () => {
     // perform any animations
   };
 
-  const performAction = (action: ActionType) => {
+  const performAction = (actionType: ActionType) => {
     // perform the action
-    console.log("performing action " + action);
+    console.log("performing action " + actionType);
     // possibly do animation
+
+    let payload: Action = {
+      action: actionType,
+      id: id
+    }
+    ws.send(JSON.stringify(payload))
   };
 
   useEffect(() => {
     if (ws) {
+      console.log('Hello')
       ws.addEventListener("open", (val) => {
         console.log("Connected");
 
@@ -60,7 +70,20 @@ const Game = () => {
         );
       });
       ws.addEventListener("message", (val) => {
-        console.log(val.data);
+        console.log(typeof val.data);
+        
+        const state: GameState = JSON.parse(val.data);
+        console.log(state)
+        const type = state.type
+        console.log('the type is ' + type)
+        switch(type){
+          case "init": // the game has begun, set the opponents health
+            console.log('Init')
+            const opponentHealth = state.player_info.filter((player) => { return player.id !== id})[0].health
+            console.log(opponentHealth)
+            setOpponentHealth(opponentHealth)
+            setWaiting(false)
+        }
       });
       ws.addEventListener("close", (val) => {
         console.log("Connection closed");
@@ -73,30 +96,39 @@ const Game = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-      <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-        <View>
-          <Text>Player</Text>
-          <Text>Player Health: {playerHealth}</Text>
-        </View>
-        <View>
-          <Text>Opponent</Text>
-          <Text>Opponent Health: {opponentHealth} </Text>
-        </View>
-      </View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-around",
-          marginTop: "5%",
-        }}
-      >
-        <Pressable onPress={() => performAction("attack")}>
-          <Text>Attack</Text>
-        </Pressable>
-        <Pressable onPress={() => performAction("defend")}>
-          <Text>Defend</Text>
-        </Pressable>
-      </View>
+      {
+        waiting ? (<View style={{ flex: 1}}>
+          <Text style={{ fontSize: 32}}>Waiting for opponent...</Text>
+        </View>) :
+
+        (<View style={{ flex: 1}}>
+          <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+            <View>
+              <Text>Player</Text>
+              <Text>Player Health: {playerHealth}</Text>
+            </View>
+            <View>
+              <Text>Opponent</Text>
+              <Text>Opponent Health: {opponentHealth} </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-around",
+              marginTop: "5%",
+            }}
+          >
+            <Pressable onPress={() => performAction("attack")}>
+              <Text>Attack</Text>
+            </Pressable>
+            <Pressable onPress={() => performAction("defend")}>
+              <Text>Defend</Text>
+            </Pressable>
+          </View>
+        </View>)
+        }
+
     </View>
   );
 };

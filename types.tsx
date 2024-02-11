@@ -45,12 +45,16 @@ export type appProvider = {
 }
 
 export interface GameState { 
-    turnId: string | undefined,
-    players: PlayerInfo[],
+    turn_id: string | undefined,
+    game_end: boolean,
+    player_info: PlayerInfo[],
+    type: StateType
 }
 
+export type StateType = "init" | "game_end"
 export type ActionType = "attack" | "defend"
 
 export interface Action {
-    actionType: ActionType;
+    action: ActionType;
+    id: string | undefined;
 }
