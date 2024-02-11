@@ -17,6 +17,12 @@ export interface app{
     tasks: toDos[]
 }
 
+export interface PlayerInfo {
+    id: string,
+    health: number,
+    defense: number,
+}
+
 export type appProvider = {
     toDos: toDos[] | undefined,
     width: number | undefined,
@@ -25,6 +31,10 @@ export type appProvider = {
     level: number | undefined,
     currentTask: toDos | undefined,
     intent: boolean | undefined,
+    maxHealth: number;
+    defense: number;
+    speed: number;
+    id: string;
     barNum: number | undefined,
     choremon: Choremon | undefined,
     addToDo: (tasks: toDos) => void,
@@ -34,10 +44,27 @@ export type appProvider = {
     updateMode: (userMode: boolean) => void,
     updateLevel: (remainder: number) => void,
     updateTask: (task: toDos) => void,
+    updateMaxHealth: (newMax: number) => void,
+    updateDefense: (newDefense: number) => void,
+    updateSpeed: (newSpeed: number) => void
     updateIntent: (val: boolean) => void,
     deleteToDo: (task: toDos) => void,
     updateChildCheck: (task: toDos) => void,
     updateParentCheck: (task: toDos) => void,
     selectChoremon: (choremon: Choremon) => void,
+}
 
+export interface GameState { 
+    turn_id: string | undefined,
+    game_end: boolean,
+    player_info: PlayerInfo[],
+    type: StateType
+}
+
+export type StateType = "init" | "game_end" | "continue"
+export type ActionType = "attack" | "defend"
+
+export interface Action {
+    action: ActionType;
+    id: string | undefined;
 }

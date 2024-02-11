@@ -5,7 +5,8 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, createContext, useState } from 'react';
 import { app, toDos, appProvider } from '@/types';
-
+import "react-native-get-random-values";
+import { v4 as uuidv4, v4 } from "uuid";
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { Choremon, ChoremonData } from '@/constants/Choremon';
@@ -49,8 +50,13 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+  const initialMaxHealth: number = 10;
+  const initialDefense: number = 5;
+  const initialSpeed: number = 2;
+
   const colorScheme = useColorScheme();
 
+  const [id, setId] = useState<string>(v4());
   const [choremon, setChoremon] = useState<Choremon | undefined>(ChoremonData[0])
   const [toDos, setToDos] = useState<toDos[]>()
   const [width, setWidth] = useState<number>(0)
@@ -60,6 +66,12 @@ function RootLayoutNav() {
   const [currentTask, setCurrentTask] = useState<toDos>()
   const [intent, setIntent] = useState<boolean>(false)
   const [barNum, setBarNum] = useState<number>(0.0)
+
+  // PLAYER STATS
+
+  const [maxHealth, setMaxHealth] = useState<number>(initialMaxHealth);
+  const [defense, setDefense] = useState<number>(initialDefense);
+  const [speed, setSpeed] = useState<number>(initialSpeed);
 
   const addToDo = (tasks:toDos) => {
     setToDos(prevArray => [...(prevArray || []), tasks]);
@@ -134,6 +146,20 @@ function RootLayoutNav() {
     setChoremon(choremon)
   }
 
+  const updateMaxHealth = (newMax: number) => {
+    setMaxHealth(newMax);
+  }
+
+  const updateDefense = (newDefense: number) => {
+    setDefense(newDefense);
+  }
+
+  const updateSpeed = (newSpeed: number) => {
+    setSpeed(newSpeed);
+  }
+
+ 
+
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <appContext.Provider value={{
@@ -144,6 +170,10 @@ function RootLayoutNav() {
         level,
         currentTask,
         intent,
+        maxHealth,
+        defense,
+        speed,
+        id,
         barNum,
         choremon,
         addToDo,
@@ -154,6 +184,9 @@ function RootLayoutNav() {
         updateLevel,
         updateTask,
         updateIntent,
+        updateMaxHealth,
+        updateDefense,
+        updateSpeed
         deleteToDo,
         updateParentCheck,
         updateChildCheck,
