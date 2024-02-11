@@ -13,6 +13,8 @@ const Shop = () => {
     currency,
     potionForSale,
     manaForSale,
+    manaPrice,
+    potionPrice,
   } = useShop();
 
   return (
@@ -82,7 +84,9 @@ const Shop = () => {
               source={require("../../assets/images/icons/potion.png")}
               style={{ width: 96, height: 96 }}
             ></Image>
-            <Text style={{ color: "white", padding : "5%" }}>{potionForSale} left</Text>
+            <Text style={{ color: "white", padding: "5%" }}>
+              {potionForSale} left, ${potionPrice}
+            </Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity
@@ -104,7 +108,9 @@ const Shop = () => {
               source={require("../../assets/images/icons/mana.png")}
               style={{ width: 96, height: 96 }}
             ></Image>
-            <Text style={{ color: "white" , padding : "5%"}}>{manaForSale} left</Text>
+            <Text style={{ color: "white", padding: "5%" }}>
+              {manaForSale} left, ${manaPrice}
+            </Text>
           </View>
         </TouchableOpacity>
       </View>

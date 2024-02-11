@@ -44,6 +44,8 @@ const useShop = () => {
     currency,
     potionForSale,
     manaForSale,
+    manaPrice,
+    potionPrice
   };
 };
 export default useShop;
