@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, Text, View, Image, Dimensions, TouchableOpacity } from 'react-native'
+import { FlatList, StyleSheet, ImageBackground, Text, View, Image, Dimensions, TouchableOpacity } from 'react-native'
 import React, { useContext } from 'react'
 import { Choremon, ChoremonData } from '@/constants/Choremon'
 import { appContext } from '../_layout';
@@ -26,7 +26,7 @@ const SelectionScreen = () => {
             }}>
                 <View style={{ justifyContent: 'center', 
                 alignItems: 'center'}}>
-                    <Text style={{ fontSize: 32}}>{item.type}</Text>
+                    <Text style={{ fontSize: 32, fontFamily: 'Retro'}}>{item.type}</Text>
                     <Image 
                     source={item.images[0] as any}
                     />
@@ -35,11 +35,12 @@ const SelectionScreen = () => {
         )
     }
   return (
-    <View style={{ flex: 1, paddingTop: screenHeight * 0.2, backgroundColor: 'white', 
-    alignItems: 'center'}}>
+    <ImageBackground style={{ flex: 1, paddingTop: screenHeight * 0.2, backgroundColor: 'white', 
+    alignItems: 'center'}}
+    source={require('../../assets/images/backgrounds/background1.png')}>
     <View style={{ marginBottom: '25%'}}>
       <Text 
-      style={{ fontSize: 32}}>Select Your Choremon!</Text>
+      style={{ fontSize: 32, fontFamily: 'Retro'}}>Select Your Choremon!</Text>
     </View>
       <FlatList 
       data={choremons}
@@ -47,7 +48,7 @@ const SelectionScreen = () => {
       renderItem={renderItem as any}
       horizontal
       />
-    </View>
+    </ImageBackground>
   )
 }
 
