@@ -1,10 +1,11 @@
-import { Action, ActionType, GameState } from "@/types";
-import { useState, useEffect } from "react";
+import { Action, ActionType, GameState, appProvider } from "@/types";
+import { useState, useEffect, useContext } from "react";
 import { View, Text, Pressable } from "react-native";
+import { appContext } from "../_layout";
 
 const Game = () => {
   const ws = new WebSocket("https://testing.rondevu.app/ws");
-
+  const { maxHealth } = useContext(appContext) as appProvider
 
   const initialState: GameState = {
     turnId: undefined,
@@ -23,8 +24,8 @@ const Game = () => {
 }
 
 
-  const [playerHealth, setPlayerHealth] = useState<number>();
-  const [opponentHealth, setOpponentHealth] = useState<number>();
+  const [playerHealth, setPlayerHealth] = useState<number | undefined>(maxHealth);
+  const [opponentHealth, setOpponentHealth] = useState<number | undefined>(undefined);
 
   const dealDamageToOpponent = (damage: number) => {
     // deal damage to opponent
@@ -42,7 +43,7 @@ const Game = () => {
   const performAction = (action: ActionType) => {
 
     // perform the action 
-
+    console.log('performing action ' + action)
     // possibly do animation
     
   }
@@ -69,7 +70,7 @@ const Game = () => {
   }, [ws]);
 
   return (
-  <View style={{ flex: 1}}>
+  <View style={{ flex: 1, backgroundColor: 'white'}}>
     <View style={{ flexDirection: 'row', justifyContent: 'space-around'}}>
     <View >
       <Text>Player</Text>
@@ -80,7 +81,7 @@ const Game = () => {
       <Text>Opponent Health: {opponentHealth} </Text>
     </View>
     </View>
-    <View>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: '5%'}}>
       <Pressable
       onPress={() => performAction("attack")}>
         <Text>Attack</Text>
