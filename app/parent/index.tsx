@@ -3,17 +3,32 @@ import { View, Button, Pressable } from "react-native";
 import { Text } from "@/components/Themed";
 import { Entypo, Ionicons, Octicons } from "@expo/vector-icons";
 import "react-native-get-random-values";
-
+import { useContext, useEffect } from "react";
+import { appContext } from "../_layout";
+import { toDos } from "@/types";
 import { v4 as uuidv4 } from "uuid";
+import { appProvider } from "@/types";
 
 type TempType = { name: string; selected: boolean; id: string };
 const AddTask = () => {
-  const [tasks, setTask] = useState<TempType[]>([
-    { name: "Trash", selected: false, id: uuidv4() },
-    { name: "Clean", selected: false, id: uuidv4() },
-    { name: "Laundry", selected: false, id: uuidv4() },
+  const [tasks, setTask] = useState<toDos[]>([
+    { name: "Trash", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
+    { name: "Clean", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
+    { name: "Laundry", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
   ]);
-  const [selectedTask, setSelectedTask] = useState<TempType[]>([]);
+
+  const [tempTasks, setTempTasks] = useState<toDos[]>()
+
+
+  const {toDos, addToDo, removeToDo, currentTask, intent, updateIntent, updateTask} = useContext(appContext) as appProvider
+  //const [selectedTask, setSelectedTask] = useState<TempType[]>([]);
+
+  useEffect(()=>{
+    if (intent == true) {
+      removeToDo(currentTask as toDos)
+    }
+  },[intent])
+
   return (
     <View style={{ alignItems: "center" }}>
       <View style={{ width: "70%", paddingTop: "5%", paddingBottom : "3%" }}>
@@ -32,21 +47,19 @@ const AddTask = () => {
           <Pressable
             key={index}
             onPress={() => {
-              const newTask = {
-                name: task.name,
-                selected: !task.selected,
-                id: task.id,
-              };
-              tasks[index] = newTask;
-              setTask([...tasks]);
+              task.selected = !task.selected
+              task.id = uuidv4()
+              setTask([...tasks])
+              if (task.selected == true){
+                setTempTasks(prevArray => [...(prevArray || []), task])
+              }
+              if (task.selected == false){
+                setTempTasks(tempTasks?.filter(item => item.id != task.id))
+              }
             }}
             style={{
-              width: "95%",
-              alignItems: "center",
-              paddingVertical: "2%",
-              marginVertical: "1%",
-              backgroundColor: task.selected ? "#FFA500" : "#000",
-              borderRadius: 9,
+              borderWidth: 2,
+              
             }}
             onLongPress={() => {}}
           >
@@ -63,71 +76,34 @@ const AddTask = () => {
           </Pressable>
         ))}
       </View>
-
-      <View style={{ minWidth: "50%" }}>
-        <Pressable
-          onPress={() => {
-            setSelectedTask([
-              ...selectedTask,
-              ...tasks.filter((tasks) => tasks.selected == true),
-            ]);
-            setTask([
-              ...tasks.map((task) => {
-                return { name: task.name, id: uuidv4(), selected: false };
-              }),
-            ]);
-          }}
-          style={{
-            paddingVertical: "1%",
-            backgroundColor: "#424242",
-            alignItems: "center",
-            marginVertical: "3%",
-            borderRadius: 999,
-          }}
-        >
-          <Octicons name="plus" size={24} color="white" />
-        </Pressable>
+      <View>
+        <Button
+          onPress={()=> {
+              tempTasks?.map((task)=>{addToDo(task)})
+              tasks.map((task) => {
+                task.selected = false
+              })
+              setTempTasks([])
+            }
+          }
+          title="+"
+        />
       </View>
-      {selectedTask.length > 0 && (
-        <View
-          style={{
-            width: "70%",
-            alignItems: "flex-start",
-            justifyContent: "flex-start",
-            paddingBottom: "3%",
-          }}
-        >
-          <Text style={{ fontSize: 18 }}>Progress</Text>
-        </View>
-      )}
-      <View
-        style={{
-          width: "80%",
-          backgroundColor: "#424242",
-          borderRadius: 5,
-          padding: selectedTask.length > 0 ? "2%" : undefined,
-        }}
-      >
-        {selectedTask.map((task, index) => (
-          <View
-            key={index}
-            style={{
-              flexDirection: "row",
-              paddingVertical: "1%",
-              marginVertical: "2%",
-              backgroundColor: "#000",
-              borderRadius: 9,
-            }}
-          >
-            <Text style={{ flex: 1, paddingLeft: "5%" }}>{task.name}</Text>
-            <Pressable style={{ paddingHorizontal: "2%" }}>
+      <View>
+        {toDos?.map((task, id) => (
+          <View key={id} style={{flexDirection : "row"}}>
+            <Text style={{flex : 1}}>{task.name}</Text>
+            <Pressable style={{paddingHorizontal : "2%"}}
+              onPress={() =>
+                {updateTask(task)
+                updateIntent()}}
+            >
               <Ionicons name="checkmark" size={24} color="white" />
             </Pressable>
             <Pressable
               onPress={() =>
-                setSelectedTask([
-                  ...selectedTask.filter((val) => val.id != task.id),
-                ])
+                {updateTask(task)
+                updateIntent()}
               }
               style={{ paddingHorizontal: "2%" }}
             >

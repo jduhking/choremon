@@ -58,8 +58,8 @@ function RootLayoutNav() {
   const [currentTask, setCurrentTask] = useState<toDos>()
   const [intent, setIntent] = useState<boolean>(false)
 
-  const addToDo = (task:toDos) => {
-    setToDos(prevArray => [...(prevArray || []), task]);
+  const addToDo = (tasks:toDos) => {
+    setToDos(prevArray => [...(prevArray || []), tasks]);
   }
 
   const removeToDo = (task:toDos) => {
