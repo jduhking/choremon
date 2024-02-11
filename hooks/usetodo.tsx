@@ -90,6 +90,6 @@ const useTodo = () => {
     }
   };
 
-  return { storeTodo, retrieveTodo, deleteTodo , todo};
+  return { storeTodo, retrieveTodo, deleteTodo , todo,};
 };
 export default useTodo;
