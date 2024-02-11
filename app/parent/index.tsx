@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { View, Button, Pressable, SafeAreaView } from "react-native";
+import { View, Button, Pressable, SafeAreaView, StatusBar, TouchableOpacity, ScrollView, Image , ImageBackground} from "react-native";
 import { Text } from "@/components/Themed";
-import { Entypo, Ionicons, Octicons } from "@expo/vector-icons";
+import { Entypo, Ionicons, Octicons, FontAwesome, Feather, MaterialIcons } from "@expo/vector-icons";
 import "react-native-get-random-values";
 import { useContext, useEffect } from "react";
 import { appContext } from "../_layout";
 import { toDos } from "@/types";
 import { v4 as uuidv4 } from "uuid";
 import { appProvider } from "@/types";
-import { icons } from "@/constants/icons";
+
+StatusBar.setBarStyle('dark-content')
 
 type TempType = { name: string; selected: boolean; id: string };
 const AddTask = () => {
@@ -44,14 +45,13 @@ const AddTask = () => {
   },[remove])
 
   return (
-    <SafeAreaView style={{ alignItems: "center" }}>
-      <View style={{ width: "70%", paddingTop: "5%", paddingBottom : "3%" }}>
-        <Text style={{ fontSize: 18 }}>Chores</Text>
+    <ImageBackground style={{ alignItems: "center", flex:1}} source={require('../../assets/images/parentsbackground.png')}>
+      <View style={{marginTop: "12%", alignItems:'center', backgroundColor:'white',}}>
+        <Text style={{ fontFamily:'Honk', color:"#E31B4D", fontSize:60, fontWeight:'700' }}>Chores</Text>
       </View>
       <View
         style={{
           alignItems: "center",
-          backgroundColor: "#424242",
           width: "80%",
           paddingVertical: "2%",
           borderRadius: 9,
@@ -72,17 +72,24 @@ const AddTask = () => {
               }
             }}
             style={{
-              borderWidth: 2,
-              
+              marginVertical: 10,
+              width:'95%',
+              height:40,
+              alignItems:'center',
+              justifyContent:'center',
+              borderRadius:9,
+              backgroundColor:'white'
             }}
-            onLongPress={() => {}}
           >
             <View
-              style={{ backgroundColor: task.selected ? "#FFA500" : undefined }}
+              style={{ backgroundColor: task.selected ? "#FFA500" : undefined , width:"100%", height:'100%', alignItems:'center',justifyContent:'center',borderRadius:6}}
             >
+              <Image
+                source={require('../../assets/images/box.png')}
+                style={{width:"115%", height:"160%", position:'absolute', objectFit:'fill', right:-30, left:-21}}
+              />
               <Text
-                lightColor="rgba(0,0,0,0.8)"
-                darkColor="rgba(255,255,255,0.8)"
+                style={{color:'black', fontSize:15, fontFamily:'Pokemon', fontWeight:'600'}}
               >
                 {task.name}
               </Text>
@@ -91,28 +98,42 @@ const AddTask = () => {
         ))}
       </View>
       <View>
-        <Button
-          onPress={()=> {
-              tempTasks?.map((task)=>{addToDo(task)})
-              tasks.map((task) => {
-                task.selected = false
-              })
-              setTempTasks([])
-            }
-          }
-          title="+"
-        />
+        <TouchableOpacity
+                    onPress={()=> {
+                      tempTasks?.map((task)=>{addToDo(task)})
+                      tasks.map((task) => {
+                        task.selected = false
+                      })
+                      setTempTasks([])
+                    }
+                  }
+        >
+              <Image
+                source={require('../../assets/images/plus.png')}
+                style={{width:40, height:40, marginBottom:2}}
+              />
+        </TouchableOpacity>
+
       </View>
-      <View>
+      <View style={{ marginTop: 5}}>
         {toDos?.map((task, id) => (
-          <View key={id} style={{flexDirection : "row"}}>
-            <Text style={{flex : 1}}>{task.name}</Text>
-            <Pressable style={{paddingHorizontal : "2%"}}
+          <View key={id} style={{flexDirection : "row", width:'80%', backgroundColor:'#D9D9D9', marginBottom:10, height:40, alignItems:'center', paddingHorizontal:20, borderRadius:10}}>
+              <Image
+                source={require('../../assets/images/solid.png')}
+                style={{width:"120%", height:"120%", position:'absolute', objectFit:'fill', right:-7}}
+              />
+            <Text style={{flex : 1, color: 'black', fontSize:15, fontFamily:'Pokemon', paddingLeft:9, paddingTop:5}}>{task.name}
+            <Text> </Text>
+            </Text>
+            <Pressable
               onPress={() =>
                 {updateTask(task)
                 updateIntent(true)}}
             >
-              <Ionicons name="checkmark" size={24} color="white" />
+              <Image
+                source={require('../../assets/images/thumbs.png')}
+                style={{width:40, height:40}}
+              />
             </Pressable>
             <Pressable
               onPress={() =>
@@ -121,12 +142,15 @@ const AddTask = () => {
               }
               style={{ paddingHorizontal: "2%" }}
             >
-              <Entypo name="cross" size={24} color="white" />
+              <Image
+                source={require('../../assets/images/trash.png')}
+                style={{width:40, height:40}}
+              />
             </Pressable>
           </View>
         ))}
       </View>
-    </SafeAreaView>
+    </ImageBackground>
   );
 };
 
