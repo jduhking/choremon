@@ -16,21 +16,16 @@ const AddTask = () => {
   const [selectedTask, setSelectedTask] = useState<TempType[]>([]);
   return (
     <View style={{ alignItems: "center" }}>
-      <View style={{ alignItems: "center", paddingVertical: "5%" }}>
-        <Text
-          lightColor="rgba(0,0,0,0.8)"
-          darkColor="rgba(255,255,255,0.8)"
-          style={{ fontSize: 24 }}
-        >
-          Chores
-        </Text>
+      <View style={{ width: "70%", paddingTop: "5%", paddingBottom : "3%" }}>
+        <Text style={{ fontSize: 18 }}>Chores</Text>
       </View>
       <View
         style={{
           alignItems: "center",
-          backgroundColor: "grey",
+          backgroundColor: "#424242",
           width: "80%",
           paddingVertical: "2%",
+          borderRadius: 9,
         }}
       >
         {tasks.map((task, index) => (
@@ -51,12 +46,12 @@ const AddTask = () => {
               paddingVertical: "2%",
               marginVertical: "1%",
               backgroundColor: task.selected ? "#FFA500" : "#000",
-              borderRadius : 9
+              borderRadius: 9,
             }}
             onLongPress={() => {}}
           >
             <View
-              style={{ backgroundColor: task.selected ? "#FFA500" : undefined, }}
+              style={{ backgroundColor: task.selected ? "#FFA500" : undefined }}
             >
               <Text
                 lightColor="rgba(0,0,0,0.8)"
@@ -84,7 +79,7 @@ const AddTask = () => {
           }}
           style={{
             paddingVertical: "1%",
-            backgroundColor: "grey",
+            backgroundColor: "#424242",
             alignItems: "center",
             marginVertical: "3%",
             borderRadius: 999,
@@ -93,13 +88,38 @@ const AddTask = () => {
           <Octicons name="plus" size={24} color="white" />
         </Pressable>
       </View>
-      <View>
-        <Text style={{ fontSize: 18 }}>Progress</Text>
-      </View>
-      <View style={{ width: "80%", backgroundColor: "grey", borderRadius : 5 , padding : "2%"}}>
+      {selectedTask.length > 0 && (
+        <View
+          style={{
+            width: "70%",
+            alignItems: "flex-start",
+            justifyContent: "flex-start",
+            paddingBottom: "3%",
+          }}
+        >
+          <Text style={{ fontSize: 18 }}>Progress</Text>
+        </View>
+      )}
+      <View
+        style={{
+          width: "80%",
+          backgroundColor: "#424242",
+          borderRadius: 5,
+          padding: selectedTask.length > 0 ? "2%" : undefined,
+        }}
+      >
         {selectedTask.map((task, index) => (
-          <View key={index} style={{ flexDirection: "row", paddingVertical : "1%", marginVertical : "2%", backgroundColor : "#000", borderRadius : 9 }}>
-            <Text style={{ flex: 1, paddingLeft : "5%" }}>{task.name}</Text>
+          <View
+            key={index}
+            style={{
+              flexDirection: "row",
+              paddingVertical: "1%",
+              marginVertical: "2%",
+              backgroundColor: "#000",
+              borderRadius: 9,
+            }}
+          >
+            <Text style={{ flex: 1, paddingLeft: "5%" }}>{task.name}</Text>
             <Pressable style={{ paddingHorizontal: "2%" }}>
               <Ionicons name="checkmark" size={24} color="white" />
             </Pressable>
