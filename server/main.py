@@ -29,6 +29,11 @@ class GameState(BaseModel):
     turn_id : str = Field(default="")
     winner : str = Field(default="")
 
+    def to_json(self):
+        d = [x.model_dump() for x in self.player_info]
+        dum = self.model_dump()
+        dum["player_info"] = d
+        return dum
 
 class Manager(BaseModel):
     state : GameState = Field(default=GameState())
@@ -55,7 +60,7 @@ async def websoc(websocket : WebSocket):
     if len(players) >=2:
         current_player = players[0][0]
         manager.state = GameState(type="init", player_info=[player for player, _ in players], turn_id=current_player.id)
-        await broadcast(players, manager.state.model_dump_json())
+        await broadcast(players, manager.state.model_dump())
         print("sent")
         print(manager.state)
     print(players)
@@ -64,7 +69,10 @@ async def websoc(websocket : WebSocket):
     while True:
         
         print("begin")
-        res: PlayerAction = await websocket.receive_json()
+        try:
+            res: PlayerAction = await websocket.receive_json()
+        except e:
+            return
         try:
             print("got this message")
             print(res)
@@ -95,14 +103,14 @@ async def websoc(websocket : WebSocket):
                 else:
                     manager.state = GameState(type="continue", turn_id=opponent.id, player_info=[sender, opponent])
                 print(f"attack successful, health is now {opponent.health}")
-                await broadcast(players, manager.state.model_dump_json())
+                await broadcast(players, manager.state.model_dump())
             if res.action == "run":
                 rand = random.randint(0, 9)
                 if rand < 3:
                     manager.state = GameState(type= "game_end", turn_id=opponent.id, player_info=[sender, opponent], game_end=True)
                 else:
                     manager.state = GameState(type= "continue", turn_id=opponent.id, player_info=[sender, opponent])
-                await broadcast(players, manager.state.model_dump_json())
+                await broadcast(players, manager.state.model_dump())
 
             if res.action == "defend":
                 manager.state = GameState(type="continue",turn_id=opponent.id, player_info=[sender, opponent])
