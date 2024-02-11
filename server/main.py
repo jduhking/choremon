@@ -12,11 +12,16 @@ app = FastAPI()
 class AuthMessage(BaseModel):
     id : str
     health : int
+    type : Literal["Tony" , "Skippy"]
+    level : int
+    defense : int = Field(default=0)
 
 class PlayerInfo(BaseModel):
     health : int
     id : str
     defense : int = Field(default=0)
+    type : Literal["Tony" , "Skippy"]
+    level : int
 
 class PlayerAction(BaseModel):
     action : Literal["attack", "defend", "run"]
@@ -56,7 +61,7 @@ async def websoc(websocket : WebSocket):
     print("user is ")
     print(user)
     auth = AuthMessage(**user)
-    players.append((PlayerInfo(health=auth.health, id=auth.id), websocket))
+    players.append((PlayerInfo(health=auth.health, id=auth.id, level=auth.level, type=auth.type), websocket))
     if len(players) >=2:
         current_player = players[0][0]
         manager.state = GameState(type="init", player_info=[player for player, _ in players], turn_id=current_player.id)
@@ -85,7 +90,7 @@ async def websoc(websocket : WebSocket):
 
         if len(players) == 2:
             
-            sender = list(filter(lambda x : x[0].id ==res.id, players))[0][0]
+            sender: PlayerInfo = list(filter(lambda x : x[0].id ==res.id, players))[0][0]
             if sender.id != manager.state.turn_id:
                 print("Sorry, It is not your turn")
                 continue
@@ -105,7 +110,7 @@ async def websoc(websocket : WebSocket):
                 print(f"attack successful, health is now {opponent.health}")
                 await broadcast(players, manager.state.model_dump())
             if res.action == "run":
-                rand = random.randint(0, 9)
+                rand = random.randint(0 + sender.level, 9 + sender.level)
                 if rand < 3:
                     manager.state = GameState(type= "game_end", turn_id=opponent.id, player_info=[sender, opponent], game_end=True)
                 else:
