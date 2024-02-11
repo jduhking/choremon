@@ -7,12 +7,14 @@ import {
   useRef,
   ReactNode,
 } from "react";
-import { View, Text, Pressable, Animated, Button, Image } from "react-native";
+import { View, Text, Pressable, Animated, Button, Image, ImageBackground, TouchableOpacity } from "react-native";
 import { appContext } from "../_layout";
 import { useRouter } from "expo-router";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { ChoremonData, ChoremonType } from "@/constants/Choremon";
+import * as Progress from "react-native-progress";
+
 const Game = () => {
   const ws = useMemo(() => {
     return new WebSocket("https://testing.rondevu.app/ws");
@@ -108,10 +110,11 @@ const Game = () => {
             // check whose turn it is
             const myTurn: boolean = state.turn_id === id;
             if (myTurn) {
+              console.log('its my turn')
               setIsTurn(true);
             } else {
               // if it is not my turn then deal damage to me if I am attacked
-              
+              console.log('its not my turn')
             }
             break;
           case "game_end":
@@ -226,63 +229,105 @@ const Game = () => {
     );
   };
   return (
-    <View style={{ flex: 1, backgroundColor: "white", paddingTop: '20%' }}>
+    <ImageBackground style={{ flex: 1, backgroundColor: "white", paddingTop: '20%' }}
+    source={require('../../assets/images/backgrounds/Battleground.png')}>
+      <>
       {!gameEnd ? (
-        <View style={{ flex: 1 }}>
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-around" }}
-          >
-            <View>
-            {choremon && (
+        <>
+        <View style={{ flex: 1, position: 'absolute',
+        bottom: '38%',
+        left: '10%', }}>
+    
+            {choremon && (<>
+              <Progress.Bar
+                  progress={playerHealth}
+                  width={150}
+                  height={20}
+                  color="ec273f"
+                />
               <Image
                 source={choremon.images[(level as number)! - 1] as any}
-                width={256}
-                height={256}
+                style={{ 
+                  width: 160,
+                  height: 160
+                }}
               />
-            )}
-              <Text>Player</Text>
-              <Text>Player Health: {playerHealth}</Text>
-            </View>
-            <View>
+            </>)}
+          </View>
+            <View style={{ flex: 1, position: 'absolute',
+        top: '40%',
+        right: '5%',}}>
               {
                 opponentType && (
+                  <>
+                  <Progress.Bar
+                  progress={opponentHealth}
+                  width={150}
+                  height={20}
+                  color="#5ab552"
+                />
               <Image
                   source={ChoremonData[opponentType === "Tony" ? 0 : 1].images[(level as number)! - 1] as any}
                   width={128}
                   height={128}
-                />)
+                  style={{
+                    width: 128,
+                    height: 128
+                  }}
+                />
+                </>)
               }
-              <Text>Opponent</Text>
-              <Text>Opponent Health: {opponentHealth} </Text>
-            </View>
           </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-around",
-              marginTop: "5%",
-            }}
-          >
-            {isTurn && (
-              <>
-                <Pressable onPress={() => performAction("attack")}>
-                  <Text>Attack</Text>
-                </Pressable>
-                <Pressable onPress={() => performAction("defend")}>
-                  <Text>Defend</Text>
-                </Pressable>
-              </>
-            )}
-          </View>
-        </View>
+          </>
       ) : (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <Text>Game Over!</Text>
         </View>
-      )}
-    </View>
+      )
+      }
+      {
+      isTurn && 
+      (
+        <View style={{ position: 'absolute',
+        bottom: 5}}>
+          <View>
+            <TouchableOpacity
+            onPress={() => {
+              performAction("defend")
+            }}>
+              <Image 
+              source={require('../../assets/images/buttons/attack.png')}
+              resizeMode="contain"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+            onPress={() => {
+              performAction("defend")
+            }}>
+                <Image 
+              source={require('../../assets/images/buttons/defend.png')}
+              resizeMode="contain"
+              />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+          onPress={() => {
+            performAction("defend")
+          }}>
+              <Image 
+            source={require('../../assets/images/buttons/run.png')}
+            resizeMode="contain"
+
+            />
+          </TouchableOpacity>
+        </View>
+        
+      )
+        }
+      </>
+    </ImageBackground>
   );
 };
 export default Game;
