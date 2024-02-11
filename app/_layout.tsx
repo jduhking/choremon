@@ -9,6 +9,7 @@ import "react-native-get-random-values";
 import { v4 as uuidv4, v4 } from "uuid";
 
 import { useColorScheme } from '@/components/useColorScheme';
+import { Choremon, ChoremonData } from '@/constants/Choremon';
 export const appContext = createContext<appProvider | undefined>(undefined)
 
 export {
@@ -56,13 +57,15 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   const [id, setId] = useState<string>(v4());
+  const [choremon, setChoremon] = useState<Choremon | undefined>(ChoremonData[0])
   const [toDos, setToDos] = useState<toDos[]>()
   const [width, setWidth] = useState<number>(0)
   const [height, setHeight] = useState<number>(0)
   const [isParent, setIsparent] = useState<boolean>(false)
-  const [level, setLevel] = useState<number>(0)
+  const [level, setLevel] = useState<number>(1)
   const [currentTask, setCurrentTask] = useState<toDos>()
   const [intent, setIntent] = useState<boolean>(false)
+  const [barNum, setBarNum] = useState<number>(0.0)
 
   // PLAYER STATS
 
@@ -74,8 +77,17 @@ function RootLayoutNav() {
     setToDos(prevArray => [...(prevArray || []), tasks]);
   }
 
+  const deleteToDo = (task:toDos) => {
+    setToDos(toDos?.filter(item => item.id != task.id))
+  }
+
   const removeToDo = (task:toDos) => {
     setToDos(toDos?.filter(item => item.id != task.id))
+    let increase = barNum + (task.difficulty/10)
+    setBarNum(increase)
+    if(increase > 1){
+      updateLevel(increase - 1)
+    }
   }
 
   const updateWidth = () => {
@@ -90,16 +102,48 @@ function RootLayoutNav() {
     setIsparent(prev => !prev)
   }
 
-  const updateLevel = () => {
+  const updateLevel = (remainder: number) => {
     setLevel(prev => prev + 1)
+    setBarNum(remainder)
   }
   const updateTask = (task:toDos) => {
     setCurrentTask(task)
   }
 
-  const updateIntent = () => {
-    setIntent(prev => !prev)
-    console.log(intent)
+  const updateIntent = (val:boolean) => {
+    setIntent(val)
+  }
+
+  const updateChildCheck = (task:toDos) => {
+    const updatedItems = toDos?.map(item => {
+      if (item.id === task.id) {
+        // Return a new object with 'completed' property toggled
+        return { ...item, child_check: true };
+      }
+      // Return unchanged object for other items
+      return item;
+    });
+
+    // Update state with the new array of items
+    setToDos(updatedItems);
+  }
+
+  const updateParentCheck = (task:toDos) => {
+    const updatedItems = toDos?.map(item => {
+      if (item.id === task.id) {
+        // Return a new object with 'completed' property toggled
+        return { ...item, parent_check: true };
+      }
+      // Return unchanged object for other items
+      return item;
+    });
+
+    // Update state with the new array of items
+    setToDos(updatedItems);
+  }
+
+  const selectChoremon = (choremon: Choremon) => {
+    setChoremon(choremon)
   }
 
   const updateMaxHealth = (newMax: number) => {
@@ -130,6 +174,8 @@ function RootLayoutNav() {
         defense,
         speed,
         id,
+        barNum,
+        choremon,
         addToDo,
         removeToDo,
         updateWidth,
@@ -141,8 +187,12 @@ function RootLayoutNav() {
         updateMaxHealth,
         updateDefense,
         updateSpeed
+        deleteToDo,
+        updateParentCheck,
+        updateChildCheck,
+        selectChoremon
       }}>
-        <Stack>
+        <Stack screenOptions={{headerShown:false}}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         </Stack>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Button, Pressable } from "react-native";
+import { View, Button, Pressable, SafeAreaView } from "react-native";
 import { Text } from "@/components/Themed";
 import { Entypo, Ionicons, Octicons } from "@expo/vector-icons";
 import "react-native-get-random-values";
@@ -8,29 +8,44 @@ import { appContext } from "../_layout";
 import { toDos } from "@/types";
 import { v4 as uuidv4 } from "uuid";
 import { appProvider } from "@/types";
+import { set } from "mongoose";
+import { icons } from "@/constants/icons";
 
 type TempType = { name: string; selected: boolean; id: string };
 const AddTask = () => {
   const [tasks, setTask] = useState<toDos[]>([
-    { name: "Trash", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
-    { name: "Clean", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
-    { name: "Laundry", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
+    { image: icons["Trash"],name: "Trash", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:1},
+    { image: icons["Mow lawn"], name: "Mow lawn", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:3},
+    { image: icons["Laundry"], name: "Laundry", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
+    { image: icons["Dishes"], name: "Dishes", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:3},
+    { image: icons["Clean Bed"], name: "Clean Bed", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:2},
+    { image: icons["Homework"], name: "Homework", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:5},
+    { image: icons["Read"], name: "Read", selected: false, id: uuidv4(), child_check: false, parent_check:false, difficulty:3}
   ]);
 
   const [tempTasks, setTempTasks] = useState<toDos[]>()
+  const [remove, setRemove] = useState(false)
 
 
-  const {toDos, addToDo, removeToDo, currentTask, intent, updateIntent, updateTask} = useContext(appContext) as appProvider
+  const {toDos, addToDo, removeToDo, currentTask, intent, updateIntent, updateTask, deleteToDo} = useContext(appContext) as appProvider
   //const [selectedTask, setSelectedTask] = useState<TempType[]>([]);
 
   useEffect(()=>{
     if (intent == true) {
       removeToDo(currentTask as toDos)
+      updateIntent(false)
     }
   },[intent])
 
+  useEffect(()=>{
+    if (remove == true) {
+      deleteToDo(currentTask as toDos)
+      setRemove(false)
+    }
+  },[remove])
+
   return (
-    <View style={{ alignItems: "center" }}>
+    <SafeAreaView style={{ alignItems: "center" }}>
       <View style={{ width: "70%", paddingTop: "5%", paddingBottom : "3%" }}>
         <Text style={{ fontSize: 18 }}>Chores</Text>
       </View>
@@ -96,14 +111,14 @@ const AddTask = () => {
             <Pressable style={{paddingHorizontal : "2%"}}
               onPress={() =>
                 {updateTask(task)
-                updateIntent()}}
+                updateIntent(true)}}
             >
               <Ionicons name="checkmark" size={24} color="white" />
             </Pressable>
             <Pressable
               onPress={() =>
                 {updateTask(task)
-                updateIntent()}
+                setRemove(true)}
               }
               style={{ paddingHorizontal: "2%" }}
             >
@@ -112,7 +127,7 @@ const AddTask = () => {
           </View>
         ))}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
