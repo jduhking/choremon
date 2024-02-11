@@ -89,7 +89,7 @@ function RootLayoutNav() {
     setToDos(toDos?.filter(item => item.id != task.id))
     let increase = barNum + (task.difficulty/10)
     setBarNum(increase)
-    if(increase > 1){
+    if(increase >= 1){
       updateLevel(increase - 1)
     }
   }
