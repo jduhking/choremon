@@ -5,6 +5,7 @@ export interface toDos{
     parent_check: boolean,
     difficulty: 1 | 2 | 3 | 4 | 5,
     selected?: boolean
+    image:string
 }
 
 export interface app{
@@ -21,14 +22,16 @@ export type appProvider = {
     isParent: boolean | undefined,
     level: number | undefined,
     currentTask: toDos | undefined,
-    intent: boolean | undefined
+    intent: boolean | undefined,
+    barNum: number | undefined,
     addToDo: (tasks: toDos) => void,
     removeToDo: (task: toDos) => void,
     updateWidth: () => void,
     updateHeight: () => void,
     updateMode: (userMode: boolean) => void,
-    updateLevel: (newLevel: number) => void,
+    updateLevel: (remainder: number) => void,
     updateTask: (task: toDos) => void,
-    updateIntent: () => void
+    updateIntent: (val: boolean) => void,
+    deleteToDo: (task: toDos) => void
 
 }

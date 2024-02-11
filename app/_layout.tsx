@@ -54,16 +54,26 @@ function RootLayoutNav() {
   const [width, setWidth] = useState<number>(0)
   const [height, setHeight] = useState<number>(0)
   const [isParent, setIsparent] = useState<boolean>(false)
-  const [level, setLevel] = useState<number>(0)
+  const [level, setLevel] = useState<number>(1)
   const [currentTask, setCurrentTask] = useState<toDos>()
   const [intent, setIntent] = useState<boolean>(false)
+  const [barNum, setBarNum] = useState<number>(0.0)
 
   const addToDo = (tasks:toDos) => {
     setToDos(prevArray => [...(prevArray || []), tasks]);
   }
 
+  const deleteToDo = (task:toDos) => {
+    setToDos(toDos?.filter(item => item.id != task.id))
+  }
+
   const removeToDo = (task:toDos) => {
     setToDos(toDos?.filter(item => item.id != task.id))
+    let increase = barNum + (task.difficulty/10)
+    setBarNum(increase)
+    if(increase > 1){
+      updateLevel(increase - 1)
+    }
   }
 
   const updateWidth = () => {
@@ -78,16 +88,16 @@ function RootLayoutNav() {
     setIsparent(prev => !prev)
   }
 
-  const updateLevel = () => {
+  const updateLevel = (remainder: number) => {
     setLevel(prev => prev + 1)
+    setBarNum(remainder)
   }
   const updateTask = (task:toDos) => {
     setCurrentTask(task)
   }
 
-  const updateIntent = () => {
-    setIntent(prev => !prev)
-    console.log(intent)
+  const updateIntent = (val:boolean) => {
+    setIntent(val)
   }
 
   return (
@@ -100,6 +110,7 @@ function RootLayoutNav() {
         level,
         currentTask,
         intent,
+        barNum,
         addToDo,
         removeToDo,
         updateWidth,
@@ -107,7 +118,8 @@ function RootLayoutNav() {
         updateMode,
         updateLevel,
         updateTask,
-        updateIntent
+        updateIntent,
+        deleteToDo
       }}>
         <Stack screenOptions={{headerShown:false}}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
