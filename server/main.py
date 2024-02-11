@@ -11,10 +11,12 @@ from pydantic import BaseModel, Field
 app = FastAPI()
 class AuthMessage(BaseModel):
     id : str
+    health : int
 
 class PlayerInfo(BaseModel):
     health : int
     id : str
+    defense : int = Field(default=0)
 
 class PlayerAction(BaseModel):
     action : Literal["attack", "defend", "run"]
@@ -26,6 +28,7 @@ class GameState(BaseModel):
     game_end : boolean = Field(default=False)
     # timestamp : datetime = Field(default_factory=datetime.utcnow)
     turn_id : str = Field(default="")
+    winner : str = Field(default="")
 
 class Manager(BaseModel):
     state : GameState = Field(default=GameState())
@@ -44,9 +47,10 @@ async def broadcast(players: List[Tuple[PlayerInfo, WebSocket]] , message):
 async def websoc(websocket : WebSocket):
     await websocket.accept()
     user = await websocket.receive_json()
-    
+    print("user is ")
+    print(user)
     auth = AuthMessage(**user)
-    players.append((PlayerInfo(health=200, id=auth.id), websocket))
+    players.append((PlayerInfo(health=auth.health, id=auth.id), websocket))
     if len(players) >=2:
         current_player = players[0][0]
         manager.state = GameState(type="init", player_info=[player for player, _ in players], turn_id=current_player.id)
@@ -84,16 +88,19 @@ async def websoc(websocket : WebSocket):
                 print(bool(opponent))
                 attack_strength = random.randint(0, 15)
                 opponent.health -= attack_strength
-                manager.state = GameState(type="continue", turn_id=opponent.id, player_info=[sender, opponent])
+                if opponent.health < 0:
+                    manager.state = GameState(type="game_end", turn_id=opponent.id, player_info=[sender, opponent], game_end=True, winner=sender.id)
+                else:
+                    manager.state = GameState(type="continue", turn_id=opponent.id, player_info=[sender, opponent])
                 print(f"attack successful, health is now {opponent.health}")
-                broadcast(players, manager.state)
+                await broadcast(players, manager.state.model_dump())
             if res.action == "run":
                 rand = random.randint(0, 9)
                 if rand < 3:
                     manager.state = GameState(type= "game_end", turn_id=opponent.id, player_info=[sender, opponent], game_end=True)
-                    await broadcast(players, manager.state)
                 else:
                     manager.state = GameState(type= "continue", turn_id=opponent.id, player_info=[sender, opponent])
+                await broadcast(players, manager.state.model_dump())
 
             if res.action == "defend":
                 manager.state = GameState(type="continue",turn_id=opponent.id, player_info=[sender, opponent])
