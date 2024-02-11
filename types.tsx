@@ -1,3 +1,4 @@
+import { ChoremonType } from "./constants/Choremon"
 import { Choremon } from "./constants/Choremon"
 
 export interface toDos{
@@ -21,6 +22,8 @@ export interface PlayerInfo {
     id: string,
     health: number,
     defense: number,
+    type: ChoremonType,
+    level: number,
 }
 
 export type appProvider = {

@@ -1,4 +1,4 @@
-import { Action, ActionType, GameState, appProvider } from "@/types";
+import { Action, ActionType, GameState, PlayerInfo, appProvider } from "@/types";
 import {
   useState,
   useEffect,
@@ -7,17 +7,20 @@ import {
   useRef,
   ReactNode,
 } from "react";
-import { View, Text, Pressable, Animated, Button } from "react-native";
+import { View, Text, Pressable, Animated, Button, Image, ImageBackground, TouchableOpacity } from "react-native";
 import { appContext } from "../_layout";
 import { useRouter } from "expo-router";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
+import { ChoremonData, ChoremonType } from "@/constants/Choremon";
+import * as Progress from "react-native-progress";
+
 const Game = () => {
   const ws = useMemo(() => {
     return new WebSocket("https://testing.rondevu.app/ws");
   }, []);
 
-  const { maxHealth, id } = useContext(appContext) as appProvider;
+  const { maxHealth, id, choremon, level, defense } = useContext(appContext) as appProvider;
   const router = useRouter();
 
   const initialState: GameState = {
@@ -29,7 +32,7 @@ const Game = () => {
   const [gameState, setGameState] = useState<GameState>(initialState);
   const [waiting, setWaiting] = useState<boolean>(true);
   const [gameEnd, setGameEnd] = useState<boolean>(false);
-  const [isTurn, setIsTurn] = useState<boolean>(true);
+  const [isTurn, setIsTurn] = useState<boolean>(false);
 
   const updateGameState = (newState: GameState) => {
     console.log("Receiving state object");
@@ -40,7 +43,7 @@ const Game = () => {
     maxHealth
   );
   const [opponentHealth, setOpponentHealth] = useState<number | undefined>(0);
-
+  const [opponentType, setOpponentType] = useState<ChoremonType | undefined>(undefined);
   const dealDamageToOpponent = (damage: number) => {
     // deal damage to opponent
     setOpponentHealth(opponentHealth! - damage);
@@ -63,6 +66,7 @@ const Game = () => {
       id: id,
     };
     ws.send(JSON.stringify(payload));
+    setIsTurn(false)
   };
 
   useEffect(() => {
@@ -75,6 +79,9 @@ const Game = () => {
           JSON.stringify({
             id: id,
             health: playerHealth,
+            defense: defense,
+            type: choremon?.type,
+            level: level
           })
         );
       });
@@ -84,33 +91,38 @@ const Game = () => {
         const state: GameState = JSON.parse(val.data);
         console.log(state);
         const type = state.type;
+        console.log(Object.keys(state))
         console.log("the type is " + type);
         switch (type) {
           case "init": // the game has begun, set the opponents health
             console.log("Init");
-            const opponentHealth = state.player_info.filter((player) => {
+            const opponent: PlayerInfo = state.player_info.filter((player) => {
               return player.id !== id;
-            })[0].health;
+            })[0];
+            const opponentHealth = opponent.health;
+            const opponentType = opponent.type;
             console.log(opponentHealth);
             setOpponentHealth(opponentHealth);
+            setOpponentType(opponentType)
             setWaiting(false);
+            break;
           case "continue":
             // check whose turn it is
             const myTurn: boolean = state.turn_id === id;
             if (myTurn) {
+              console.log('its my turn')
               setIsTurn(true);
             } else {
               // if it is not my turn then deal damage to me if I am attacked
+              console.log('its not my turn')
             }
+            break;
           case "game_end":
             // set the game to game over
             setGameEnd(true);
-
             // get the winner
-
             // route to the game over screen with the winner.
-            router.replace("/");
-
+            router.replace("/gameover/");
             ws.close();
         }
       });
@@ -125,12 +137,12 @@ const Game = () => {
   const [attack, setAttack] = useState("");
   const toggleAttack = () => {
     setAttack(uuidv4());
-    setHit("")
+    setHit("");
   };
   const [hit, setHit] = useState("");
   const toggleHit = () => {
     setHit(uuidv4());
-    setAttack("")
+    setAttack("");
   };
   const AnimationView = ({
     attack,
@@ -168,7 +180,6 @@ const Game = () => {
             duration: 100,
             useNativeDriver: true,
           }),
-          
         ]).start();
       }
     }, [opac, attack]);
@@ -218,68 +229,105 @@ const Game = () => {
     );
   };
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
-      {waiting ? (
-        <AnimationView attack={attack} hit={hit}>
-          <Text style={{ fontSize: 32 }}>Waiting for opponent...</Text>
-          <View style={{padding : 20}}>
-
-          <Button
-            onPress={() => {
-              toggleAttack();
-            }}
-            title="Trigger Attack"
-            
-          ></Button>
+    <ImageBackground style={{ flex: 1, backgroundColor: "white", paddingTop: '20%' }}
+    source={require('../../assets/images/backgrounds/Battleground.png')}>
+      <>
+      {!gameEnd ? (
+        <>
+        <View style={{ flex: 1, position: 'absolute',
+        bottom: '38%',
+        left: '10%', }}>
+    
+            {choremon && (<>
+              <Progress.Bar
+                  progress={playerHealth}
+                  width={150}
+                  height={20}
+                  color="ec273f"
+                />
+              <Image
+                source={choremon.images[(level as number)! - 1] as any}
+                style={{ 
+                  width: 160,
+                  height: 160
+                }}
+              />
+            </>)}
           </View>
-          <Button
-            onPress={() => {
-              toggleHit();
-            }}
-            title="Trigger Hit"
-          ></Button>
-        </AnimationView>
-      ) : gameEnd ? (
-        <View style={{ flex: 1 }}>
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-around" }}
-          >
-            <View>
-              <Text>Player</Text>
-              <Text>Player Health: {playerHealth}</Text>
-            </View>
-            <View>
-              <Text>Opponent</Text>
-              <Text>Opponent Health: {opponentHealth} </Text>
-            </View>
+            <View style={{ flex: 1, position: 'absolute',
+        top: '40%',
+        right: '5%',}}>
+              {
+                opponentType && (
+                  <>
+                  <Progress.Bar
+                  progress={opponentHealth}
+                  width={150}
+                  height={20}
+                  color="#5ab552"
+                />
+              <Image
+                  source={ChoremonData[opponentType === "Tony" ? 0 : 1].images[(level as number)! - 1] as any}
+                  width={128}
+                  height={128}
+                  style={{
+                    width: 128,
+                    height: 128
+                  }}
+                />
+                </>)
+              }
           </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-around",
-              marginTop: "5%",
-            }}
-          >
-            {isTurn && (
-              <>
-                <Pressable onPress={() => performAction("attack")}>
-                  <Text>Attack</Text>
-                </Pressable>
-                <Pressable onPress={() => performAction("defend")}>
-                  <Text>Defend</Text>
-                </Pressable>
-              </>
-            )}
-          </View>
-        </View>
+          </>
       ) : (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <Text>Game Over!</Text>
         </View>
-      )}
-    </View>
+      )
+      }
+      {
+      isTurn && 
+      (
+        <View style={{ position: 'absolute',
+        bottom: 5}}>
+          <View>
+            <TouchableOpacity
+            onPress={() => {
+              performAction("defend")
+            }}>
+              <Image 
+              source={require('../../assets/images/buttons/attack.png')}
+              resizeMode="contain"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+            onPress={() => {
+              performAction("defend")
+            }}>
+                <Image 
+              source={require('../../assets/images/buttons/defend.png')}
+              resizeMode="contain"
+              />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+          onPress={() => {
+            performAction("defend")
+          }}>
+              <Image 
+            source={require('../../assets/images/buttons/run.png')}
+            resizeMode="contain"
+
+            />
+          </TouchableOpacity>
+        </View>
+        
+      )
+        }
+      </>
+    </ImageBackground>
   );
 };
 export default Game;
