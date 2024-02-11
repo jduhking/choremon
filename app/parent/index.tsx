@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Button, Pressable, SafeAreaView, StatusBar, TouchableOpacity, ScrollView, Image , ImageBackground} from "react-native";
+import { View, Button, Pressable, SafeAreaView, StatusBar, TouchableOpacity, ScrollView, Image , ImageBackground, FlatList} from "react-native";
 import { Text } from "@/components/Themed";
 import { Entypo, Ionicons, Octicons, FontAwesome, Feather, MaterialIcons } from "@expo/vector-icons";
 import "react-native-get-random-values";
@@ -45,6 +45,41 @@ const AddTask = () => {
       setRemove(false)
     }
   },[remove])
+
+  const renderitem = ({ item }: { item: toDos }) => {
+    return (
+    <View style={{flexDirection : "row", width:"80%", backgroundColor:'#D9D9D9', marginBottom:10, height:40, alignItems:'center', paddingHorizontal:20, borderRadius:10}}>
+        <Image
+          source={require('../../assets/images/solid.png')}
+          style={{width:"120%", height:"120%", position:'absolute', objectFit:'fill', right:-7}}
+        />
+      <Text style={{flex : 1, color: 'black', fontSize:15, fontFamily:'Pokemon', paddingLeft:9, paddingTop:5}}>{item.name}
+      <Text> </Text>
+      </Text>
+      <Pressable
+        onPress={() =>
+          {updateTask(item)
+          updateIntent(true)}}
+      >
+        <Image
+          source={require('../../assets/images/thumbs.png')}
+          style={{width:40, height:40}}
+        />
+      </Pressable>
+      <Pressable
+        onPress={() =>
+          {updateTask(item)
+          setRemove(true)}
+        }
+        style={{ paddingHorizontal: "2%" }}
+      >
+        <Image
+          source={require('../../assets/images/trash.png')}
+          style={{width:40, height:40}}
+        />
+      </Pressable>
+    </View>
+  )}
 
   return (
     <ImageBackground style={{ alignItems: "center", flex:1}} source={require('../../assets/images/parentsbackground.png')}>
@@ -117,40 +152,16 @@ const AddTask = () => {
         </TouchableOpacity>
 
       </View>
-      <View style={{ marginTop: 5}}>
-        {toDos?.map((task, id) => (
-          <View key={id} style={{flexDirection : "row", width:'80%', backgroundColor:'#D9D9D9', marginBottom:10, height:40, alignItems:'center', paddingHorizontal:20, borderRadius:10}}>
-              <Image
-                source={require('../../assets/images/solid.png')}
-                style={{width:"120%", height:"120%", position:'absolute', objectFit:'fill', right:-7}}
-              />
-            <Text style={{flex : 1, color: 'black', fontSize:15, fontFamily:'Pokemon', paddingLeft:9, paddingTop:5}}>{task.name}
-            <Text> </Text>
-            </Text>
-            <Pressable
-              onPress={() =>
-                {updateTask(task)
-                updateIntent(true)}}
-            >
-              <Image
-                source={require('../../assets/images/thumbs.png')}
-                style={{width:40, height:40}}
-              />
-            </Pressable>
-            <Pressable
-              onPress={() =>
-                {updateTask(task)
-                setRemove(true)}
-              }
-              style={{ paddingHorizontal: "2%" }}
-            >
-              <Image
-                source={require('../../assets/images/trash.png')}
-                style={{width:40, height:40}}
-              />
-            </Pressable>
-          </View>
-        ))}
+      <View style={{ marginTop: 5, width:'100%', height:'100%'}}>
+        <FlatList
+          data={toDos}
+          renderItem={renderitem}
+          keyExtractor={(item) => item.id}
+          style={{flex:1}}
+          contentContainerStyle={{alignItems:'center', paddingTop:6}}
+          scrollEnabled={true}
+          persistentScrollbar={true}
+        />
       </View>
     </ImageBackground>
   );
