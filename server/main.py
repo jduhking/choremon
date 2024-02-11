@@ -23,6 +23,7 @@ async def lifespan(app : FastAPI):
     pass
 
 class Task(Document):
+    id : str
     name: str
     child_check: bool = Field(default=False)
     parent_check: bool = Field(default=False)
@@ -58,7 +59,7 @@ class PlayerInfo(BaseModel):
     level : int
 
 class PlayerAction(BaseModel):
-    action : Literal["attack", "defend", "run"]
+    action : Literal["attack", "defend", "run", "heal"]
     id : str
 
 class GameState(BaseModel):
@@ -67,7 +68,7 @@ class GameState(BaseModel):
     game_end : bool = Field(default=False)
     turn_id : str = Field(default="")
     winner : str = Field(default="")
-
+    loot : int = Field(default=0)
     def to_json(self):
         d = [x.model_dump() for x in self.player_info]
         dum = self.model_dump()
@@ -131,6 +132,7 @@ async def websoc(websocket : WebSocket):
             
             opponent = list(filter(lambda x : x[0].id != res.id, players))[0][0]
             if res.action == "attack":
+                sender.defense = 0
                 print("attack")
                 
                 print(bool(opponent))
@@ -138,21 +140,25 @@ async def websoc(websocket : WebSocket):
                 defense = opponent.defense
                 opponent.health -= attack_strength + defense
                 if opponent.health < 0:
-                    manager.state = GameState(type="game_end", turn_id=opponent.id, player_info=[sender, opponent], game_end=True, winner=sender.id)
+                    manager.state = GameState(type="game_end", turn_id=opponent.id, player_info=[sender, opponent], game_end=True, winner=sender.id, loot=100)
                 else:
                     manager.state = GameState(type="continue", turn_id=opponent.id, player_info=[sender, opponent])
                 print(f"attack successful, health is now {opponent.health}")
                 # await broadcast(players, manager.state.model_dump())
             elif res.action == "run":
-                rand = random.randint(0 , 2 )
+                rand = random.randint(0 , 9 )
                 if rand < 3:
-                    manager.state = GameState(type= "game_end", turn_id=opponent.id, player_info=[sender, opponent], game_end=True)
+                    manager.state = GameState(type= "game_end", turn_id=opponent.id, player_info=[sender, opponent], game_end=True, winner=opponent.id, loot=200)
                 else:
                     manager.state = GameState(type= "continue", turn_id=opponent.id, player_info=[sender, opponent])
 
             elif res.action == "defend":
+                sender.defense = 5
                 manager.state = GameState(type="continue",turn_id=opponent.id, player_info=[sender, opponent])
-
+            elif res.action == "heal":
+                health_gain = 5
+                sender.health += health_gain
+                manager.state = GameState(type="continue", turn_id=opponent.id, player_info=[sender, opponent])
             await broadcast(players, manager.state.model_dump())
             if (len(players) < 2):
                 continue

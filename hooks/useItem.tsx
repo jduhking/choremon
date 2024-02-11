@@ -18,8 +18,8 @@ const useItem = () => {
       }
     }
   };
-  const saveHealPotionCount = (value: number) => {
-    AsyncStorage.setItem("health", value.toString());
+  const saveHealPotionCount = async (value: number) => {
+    await AsyncStorage.setItem("health", value.toString());
     setPotion(value);
   };
   const getManaPotionCount = async () => {
@@ -55,6 +55,23 @@ const useItem = () => {
     AsyncStorage.setItem("currency", value.toString());
     setCurrency(value);
   };
+  const consumePotion = async () => {
+    if (potion <= 0) {
+      return false;
+    } else {
+      saveHealPotionCount(potion - 1);
+      return true;
+    }
+  };
+  const consumeMana = () => {
+    if (mana <= 0) {
+      return;
+    }
+    saveManaPotionCount(mana - 1);
+  };
+  const retrieveLoot = (loot: number) => {
+    saveCurrency(loot + currency);
+  };
   getHealPotionCount().then((val) => {
     setPotion(val);
   });
@@ -74,6 +91,8 @@ const useItem = () => {
     potion,
     mana,
     currency,
+    consumePotion,
+    retrieveLoot,
   };
 };
 

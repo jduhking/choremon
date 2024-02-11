@@ -29,6 +29,7 @@ import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { ChoremonData, ChoremonType } from "@/constants/Choremon";
 import * as Progress from "react-native-progress";
+import useItem from "@/hooks/useItem";
 
 const Game = () => {
   const ws = useMemo(() => {
@@ -45,6 +46,7 @@ const Game = () => {
     game_end: false,
     player_info: [],
     type: "init",
+    
   };
   const [gameState, setGameState] = useState<GameState>(initialState);
   const [waiting, setWaiting] = useState<boolean>(true);
@@ -145,18 +147,22 @@ const Game = () => {
               console.log("its my turn");
               console.log(me.health);
               console.log(myMaxHealth.current);
-              
-              
+
               setPlayerHealth(me.health);
+              setOpponentHealth(them.health);
+
               setIsTurn(true);
             } else {
               // if it is not my turn then deal damage to me if I am attacked
               console.log("its not my turn");
               setOpponentHealth(them.health);
+              setPlayerHealth(me.health);
+
               // setPlayerHealth()
             }
             break;
           case "game_end":
+            retrieveLoot(state.loot!)
             // set the game to game over
             setGameEnd(true);
             // get the winner
@@ -183,6 +189,19 @@ const Game = () => {
     setHit(uuidv4());
     setAttack("");
   };
+
+  const [otherAttack, setOtherAttack] = useState("");
+  const toggleOtherAttack = () => {
+    setOtherAttack(uuidv4());
+    setOtherHit("");
+  };
+
+  const [otherHit, setOtherHit] = useState("");
+  const toggleOtherHit = () => {
+    setOtherHit(uuidv4());
+    setOtherAttack("");
+  };
+
   const AnimationView = ({
     attack,
     children,
@@ -267,6 +286,10 @@ const Game = () => {
       </Animated.View>
     );
   };
+
+  const { consumePotion, potion, mana, retrieveLoot } = useItem();
+
+  const [itemView, setItemView] = useState(false);
   return (
     <ImageBackground
       style={{ flex: 1, backgroundColor: "white", paddingTop: "20%" }}
@@ -286,20 +309,20 @@ const Game = () => {
               {choremon && (
                 <>
                   <Progress.Bar
-                    progress={
-                      playerHealth! / myMaxHealth.current
-                    }
+                    progress={playerHealth! / myMaxHealth.current}
                     width={150}
                     height={20}
                     color="#ec273f"
                   />
-                  <Image
-                    source={choremon.images[(level as number)! - 1] as any}
-                    style={{
-                      width: 160,
-                      height: 160,
-                    }}
-                  />
+                  <AnimationView hit={""} attack={attack}>
+                    <Image
+                      source={choremon.images[(level as number)! - 1] as any}
+                      style={{
+                        width: 160,
+                        height: 160,
+                      }}
+                    />
+                  </AnimationView>
                 </>
               )}
             </View>
@@ -309,26 +332,26 @@ const Game = () => {
               {opponentType && (
                 <>
                   <Progress.Bar
-                    progress={
-                      opponentHealth! / opponentMaxHealth.current
-                    }
+                    progress={opponentHealth! / opponentMaxHealth.current}
                     width={150}
                     height={20}
                     color="#5ab552"
                   />
-                  <Image
-                    source={
-                      ChoremonData[opponentType === "Tony" ? 0 : 1].images[
-                        (level as number)! - 1
-                      ] as any
-                    }
-                    width={128}
-                    height={128}
-                    style={{
-                      width: 128,
-                      height: 128,
-                    }}
-                  />
+                  <AnimationView hit={hit} attack={otherAttack}>
+                    <Image
+                      source={
+                        ChoremonData[opponentType === "Tony" ? 0 : 1].images[
+                          (level as number)! - 1
+                        ] as any
+                      }
+                      width={128}
+                      height={128}
+                      style={{
+                        width: 128,
+                        height: 128,
+                      }}
+                    />
+                  </AnimationView>
                 </>
               )}
             </View>
@@ -342,38 +365,85 @@ const Game = () => {
         )}
         {isTurn && (
           <View style={{ position: "absolute", bottom: 5 }}>
-            <View>
-              <TouchableOpacity
-                onPress={() => {
-                  performAction("attack");
-                }}
-              >
-                <Image
-                  source={require("../../assets/images/buttons/attack.png")}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  performAction("defend");
-                }}
-              >
-                <Image
-                  source={require("../../assets/images/buttons/defend.png")}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity
-              onPress={() => {
-                performAction("run");
-              }}
-            >
-              <Image
-                source={require("../../assets/images/buttons/run.png")}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
+            {!itemView ? (
+              <View style={{ flexDirection: "row" }}>
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      performAction("attack");
+                      toggleAttack();
+                    }}
+                  >
+                    <Image
+                      source={require("../../assets/images/buttons/attack.png")}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      performAction("defend");
+                    }}
+                  >
+                    <Image
+                      source={require("../../assets/images/buttons/defend.png")}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      performAction("run");
+                    }}
+                  >
+                    <Image
+                      source={require("../../assets/images/buttons/run.png")}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                </View>
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setItemView(true);
+                    }}
+                  >
+                    <Image
+                      source={require("../../assets/images/buttons/items.png")}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ) : (
+              <View>
+                <TouchableOpacity
+                  onPress={() => {
+                    consumePotion().then(val => {
+                      if(val){
+                        performAction("heal");
+                      }
+                    });
+                    setItemView(false);
+                  }}
+                >
+                  <Image
+                    source={require("../../assets/images/buttons/heal.png")}
+                    resizeMode="contain"
+                  />
+                  <Text>{potion} potions</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    setItemView(false);
+                  }}
+                >
+                  <Image
+                    source={require("../../assets/images/buttons/mana.png")}
+                    resizeMode="contain"
+                  />
+                  <Text>{mana} mana</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         )}
       </>
