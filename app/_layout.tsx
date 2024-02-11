@@ -48,6 +48,10 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+  const initialMaxHealth: number = 10;
+  const initialDefense: number = 5;
+  const initialSpeed: number = 2;
+
   const colorScheme = useColorScheme();
 
   const [toDos, setToDos] = useState<toDos[]>()
@@ -57,6 +61,12 @@ function RootLayoutNav() {
   const [level, setLevel] = useState<number>(0)
   const [currentTask, setCurrentTask] = useState<toDos>()
   const [intent, setIntent] = useState<boolean>(false)
+
+  // PLAYER STATS
+
+  const [maxHealth, setMaxHealth] = useState<number>(initialMaxHealth);
+  const [defense, setDefense] = useState<number>(initialDefense);
+  const [speed, setSpeed] = useState<number>(initialSpeed);
 
   const addToDo = (tasks:toDos) => {
     setToDos(prevArray => [...(prevArray || []), tasks]);
@@ -90,6 +100,20 @@ function RootLayoutNav() {
     console.log(intent)
   }
 
+  const updateMaxHealth = (newMax: number) => {
+    setMaxHealth(newMax);
+  }
+
+  const updateDefense = (newDefense: number) => {
+    setDefense(newDefense);
+  }
+
+  const updateSpeed = (newSpeed: number) => {
+    setSpeed(newSpeed);
+  }
+
+ 
+
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <appContext.Provider value={{
@@ -100,6 +124,9 @@ function RootLayoutNav() {
         level,
         currentTask,
         intent,
+        maxHealth,
+        defense,
+        speed,
         addToDo,
         removeToDo,
         updateWidth,
@@ -107,7 +134,10 @@ function RootLayoutNav() {
         updateMode,
         updateLevel,
         updateTask,
-        updateIntent
+        updateIntent,
+        updateMaxHealth,
+        updateDefense,
+        updateSpeed
       }}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

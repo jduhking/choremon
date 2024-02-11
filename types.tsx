@@ -14,6 +14,12 @@ export interface app{
     tasks: toDos[]
 }
 
+export interface PlayerStats {
+    maxHealth: number;
+    defense: number;
+    speed: number;
+}
+
 export type appProvider = {
     toDos: toDos[] | undefined,
     width: number | undefined,
@@ -21,7 +27,10 @@ export type appProvider = {
     isParent: boolean | undefined,
     level: number | undefined,
     currentTask: toDos | undefined,
-    intent: boolean | undefined
+    intent: boolean | undefined,
+    maxHealth: number;
+    defense: number;
+    speed: number;
     addToDo: (tasks: toDos) => void,
     removeToDo: (task: toDos) => void,
     updateWidth: () => void,
@@ -29,6 +38,20 @@ export type appProvider = {
     updateMode: (userMode: boolean) => void,
     updateLevel: (newLevel: number) => void,
     updateTask: (task: toDos) => void,
-    updateIntent: () => void
+    updateIntent: () => void,
+    updateMaxHealth: (newMax: number) => void,
+    updateDefense: (newDefense: number) => void,
+    updateSpeed: (newSpeed: number) => void
+}
 
+export interface GameState { 
+    loseHealth: number;
+    gameEnd: boolean;
+    turnId: string | undefined;
+}
+
+export type ActionType = "attack" | "defend"
+
+export interface Action {
+    actionType: ActionType;
 }
