@@ -34,8 +34,11 @@ async def websoc(websocket : WebSocket):
             websocket.send_json(gamestart.model_dump())
         print(players)
     except Exception:
-        websocket.close()
+        await websocket.close()
 
     while True:
-        pass
+        try:
+            await websocket.receive()
+        except Exception:
+            return 
     ...

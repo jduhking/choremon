@@ -43,8 +43,7 @@ const Game = () => {
         
       })
     }
-    return;
-    () => {ws.close()};
+    return () => {ws.close()};
   }, [ws]);
 };
 export default Game;
