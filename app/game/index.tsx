@@ -126,12 +126,12 @@ const Game = () => {
   const [attack, setAttack] = useState("");
   const toggleAttack = () => {
     setAttack(uuidv4());
-    setHit("")
+    setHit("");
   };
   const [hit, setHit] = useState("");
   const toggleHit = () => {
     setHit(uuidv4());
-    setAttack("")
+    setAttack("");
   };
   const AnimationView = ({
     attack,
@@ -169,7 +169,6 @@ const Game = () => {
             duration: 100,
             useNativeDriver: true,
           }),
-          
         ]).start();
       }
     }, [opac, attack]);
