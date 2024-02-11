@@ -92,13 +92,12 @@ const Game = () => {
             if(myTurn){
               setIsTurn(true)
             } else {
-              // if it is not my turn then deal damage to me
+              // if it is not my turn then deal damage to me if I am attacked
             }
           case "game_end": 
-            
-
-            
-
+            // set the game to game over
+            setGameEnd(true)
+            ws.close()        
         }
       });
       ws.addEventListener("close", (val) => {
