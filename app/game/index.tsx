@@ -4,7 +4,7 @@ import { View, Text, Pressable } from "react-native";
 import { appContext } from "../_layout";
 
 const Game = () => {
-  
+
   const ws = useMemo(() => { 
     return new WebSocket("https://testing.rondevu.app/ws")
   }, []);
@@ -65,7 +65,7 @@ const Game = () => {
 
         ws.send(
           JSON.stringify({
-            id
+            id: id 
           })
         );
       });
