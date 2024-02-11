@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Button} from 'react-native';
+import { Pressable, StyleSheet, Button, TouchableOpacity} from 'react-native';
 import { useContext } from 'react';
 import { appContext } from '../_layout';
 import { app, appProvider, toDos } from '@/types';
@@ -9,38 +9,21 @@ import { Text, View } from "@/components/Themed";
 import { Link } from "expo-router";
 
 export default function TabOneScreen() {
-  const {width, updateWidth, toDos, addToDo, currentTask, updateTask, removeToDo, intent, updateIntent} = useContext(appContext) as appProvider
-
-  const handler = () => {
-    updateWidth(),
-    addToDo(
-      {
-        name:'add',
-        id:"1",
-        child_check: true,
-        parent_check: true,
-        difficulty: 1
-      }
-    )
-  }
-
-  if (intent == true) {
-    removeToDo(currentTask as toDos),
-    updateIntent()
-  }
-  const {storeTodo, retrieveTodo, deleteTodo} = useTodo()
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
-      />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
-      <Link href="/parent/">
-        <Text>Click here</Text>
-      </Link>
+      <Text style={{fontSize:30}}>Choose Mode</Text>
+      <View style={{width:'100%', height:'10%', flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
+        <TouchableOpacity style={{backgroundColor:'orange', width:"20%", height:40, alignItems:'center', justifyContent:'center', borderRadius:8, marginHorizontal:6}}>
+          <Link href="/parent/">
+              <Text style={{color:"black"}}>parent</Text>
+          </Link>
+        </TouchableOpacity>
+        <TouchableOpacity style={{backgroundColor:'blue', width:"20%", height:40, alignItems:'center', justifyContent:'center', borderRadius:8, marginHorizontal:6}}>
+          <Link href="/child/">
+              <Text>Child</Text>
+          </Link>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
