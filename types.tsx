@@ -51,7 +51,7 @@ export interface GameState {
     type: StateType
 }
 
-export type StateType = "init" | "game_end"
+export type StateType = "init" | "game_end" | "continue"
 export type ActionType = "attack" | "defend"
 
 export interface Action {

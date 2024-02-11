@@ -20,6 +20,7 @@ const Game = () => {
   };
   const [gameState, setGameState] = useState<GameState>(initialState);
   const [waiting, setWaiting] = useState<boolean>(true);
+  const [isTurn, setIsTurn] = useState<boolean>(true);
 
   const updateGameState = (newState: GameState) => {
     console.log("Receiving state object");
@@ -62,10 +63,11 @@ const Game = () => {
       console.log('Hello')
       ws.addEventListener("open", (val) => {
         console.log("Connected");
-
+        console.log(id)
         ws.send(
           JSON.stringify({
-            id: id 
+            id: id,
+            health: playerHealth
           })
         );
       });
@@ -83,6 +85,17 @@ const Game = () => {
             console.log(opponentHealth)
             setOpponentHealth(opponentHealth)
             setWaiting(false)
+          case "continue": 
+            // check whose turn it is
+            const myTurn: boolean = state.turn_id === id;
+            if(myTurn){
+              setIsTurn(true)
+            } else {
+              // if it is not my turn then deal damage to me
+            }
+
+            
+
         }
       });
       ws.addEventListener("close", (val) => {
