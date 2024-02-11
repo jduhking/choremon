@@ -62,6 +62,7 @@ export interface GameState {
     game_end: boolean,
     player_info: PlayerInfo[],
     type: StateType
+    loot? : number
 }
 
 export type StateType = "init" | "game_end" | "continue"

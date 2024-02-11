@@ -46,6 +46,7 @@ const Game = () => {
     game_end: false,
     player_info: [],
     type: "init",
+    
   };
   const [gameState, setGameState] = useState<GameState>(initialState);
   const [waiting, setWaiting] = useState<boolean>(true);
@@ -148,15 +149,20 @@ const Game = () => {
               console.log(myMaxHealth.current);
 
               setPlayerHealth(me.health);
+              setOpponentHealth(them.health);
+
               setIsTurn(true);
             } else {
               // if it is not my turn then deal damage to me if I am attacked
               console.log("its not my turn");
               setOpponentHealth(them.health);
+              setPlayerHealth(me.health);
+
               // setPlayerHealth()
             }
             break;
           case "game_end":
+            retrieveLoot(state.loot!)
             // set the game to game over
             setGameEnd(true);
             // get the winner
@@ -183,6 +189,19 @@ const Game = () => {
     setHit(uuidv4());
     setAttack("");
   };
+
+  const [otherAttack, setOtherAttack] = useState("");
+  const toggleOtherAttack = () => {
+    setOtherAttack(uuidv4());
+    setOtherHit("");
+  };
+
+  const [otherHit, setOtherHit] = useState("");
+  const toggleOtherHit = () => {
+    setOtherHit(uuidv4());
+    setOtherAttack("");
+  };
+
   const AnimationView = ({
     attack,
     children,
@@ -268,7 +287,7 @@ const Game = () => {
     );
   };
 
-  const { consumePotion } = useItem();
+  const { consumePotion, potion, mana, retrieveLoot } = useItem();
 
   const [itemView, setItemView] = useState(false);
   return (
@@ -295,18 +314,19 @@ const Game = () => {
                     height={20}
                     color="#ec273f"
                   />
-                  
-                  <Image
-                    source={choremon.images[(level as number)! - 1] as any}
-                    style={{
-                      width: 160,
-                      height: 160,
-                    }}
-                  />
+                  <AnimationView hit={""} attack={attack}>
+                    <Image
+                      source={choremon.images[(level as number)! - 1] as any}
+                      style={{
+                        width: 160,
+                        height: 160,
+                      }}
+                    />
+                  </AnimationView>
                 </>
               )}
             </View>
-            <View 
+            <View
               style={{ flex: 1, position: "absolute", top: "23%", right: "5%" }}
             >
               {opponentType && (
@@ -317,19 +337,21 @@ const Game = () => {
                     height={20}
                     color="#5ab552"
                   />
-                  <Image
-                    source={
-                      ChoremonData[opponentType === "Tony" ? 0 : 1].images[
-                        (level as number)! - 1
-                      ] as any
-                    }
-                    width={128}
-                    height={128}
-                    style={{
-                      width: 128,
-                      height: 128,
-                    }}
-                  />
+                  <AnimationView hit={hit} attack={otherAttack}>
+                    <Image
+                      source={
+                        ChoremonData[opponentType === "Tony" ? 0 : 1].images[
+                          (level as number)! - 1
+                        ] as any
+                      }
+                      width={128}
+                      height={128}
+                      style={{
+                        width: 128,
+                        height: 128,
+                      }}
+                    />
+                  </AnimationView>
                 </>
               )}
             </View>
@@ -343,12 +365,13 @@ const Game = () => {
         )}
         {isTurn && (
           <View style={{ position: "absolute", bottom: 5 }}>
-            {itemView ? (
-              <View>
+            {!itemView ? (
+              <View style={{ flexDirection: "row" }}>
                 <View>
                   <TouchableOpacity
                     onPress={() => {
                       performAction("attack");
+                      toggleAttack();
                     }}
                   >
                     <Image
@@ -394,8 +417,11 @@ const Game = () => {
               <View>
                 <TouchableOpacity
                   onPress={() => {
-                    performAction("heal");
-                    consumePotion();
+                    consumePotion().then(val => {
+                      if(val){
+                        performAction("heal");
+                      }
+                    });
                     setItemView(false);
                   }}
                 >
@@ -403,6 +429,7 @@ const Game = () => {
                     source={require("../../assets/images/buttons/heal.png")}
                     resizeMode="contain"
                   />
+                  <Text>{potion} potions</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
@@ -413,12 +440,12 @@ const Game = () => {
                     source={require("../../assets/images/buttons/mana.png")}
                     resizeMode="contain"
                   />
+                  <Text>{mana} mana</Text>
                 </TouchableOpacity>
               </View>
             )}
           </View>
         )}
-        webp
       </>
     </ImageBackground>
   );
