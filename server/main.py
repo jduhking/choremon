@@ -87,7 +87,8 @@ async def websoc(websocket : WebSocket):
                 
                 print(bool(opponent))
                 attack_strength = random.randint(0, 15)
-                opponent.health -= attack_strength
+                defense = opponent.defense
+                opponent.health -= attack_strength + defense
                 if opponent.health < 0:
                     manager.state = GameState(type="game_end", turn_id=opponent.id, player_info=[sender, opponent], game_end=True, winner=sender.id)
                 else:

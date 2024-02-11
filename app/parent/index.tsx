@@ -8,7 +8,6 @@ import { appContext } from "../_layout";
 import { toDos } from "@/types";
 import { v4 as uuidv4 } from "uuid";
 import { appProvider } from "@/types";
-import { set } from "mongoose";
 import { icons } from "@/constants/icons";
 
 type TempType = { name: string; selected: boolean; id: string };
