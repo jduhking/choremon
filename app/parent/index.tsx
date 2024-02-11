@@ -11,6 +11,8 @@ import { appProvider } from "@/types";
 
 StatusBar.setBarStyle('dark-content')
 
+import { icons } from "@/constants/icons";
+
 type TempType = { name: string; selected: boolean; id: string };
 const AddTask = () => {
   const [tasks, setTask] = useState<toDos[]>([
