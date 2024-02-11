@@ -2,11 +2,10 @@ import { Action, ActionType, GameState, appProvider } from "@/types";
 import { useState, useEffect, useContext } from "react";
 import { View, Text, Pressable } from "react-native";
 import { appContext } from "../_layout";
-import "react-native-get-random-values";
-import { v4 as uuidv4, v4 } from "uuid";
+
 const Game = () => {
   const ws = new WebSocket("https://testing.rondevu.app/ws");
-  const { maxHealth } = useContext(appContext) as appProvider;
+  const { maxHealth, id } = useContext(appContext) as appProvider;
 
   const initialState: GameState = {
     turnId: undefined,
@@ -56,7 +55,7 @@ const Game = () => {
 
         ws.send(
           JSON.stringify({
-            id: v4(),
+            id
           })
         );
       });

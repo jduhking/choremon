@@ -30,6 +30,7 @@ export type appProvider = {
     maxHealth: number;
     defense: number;
     speed: number;
+    id: string;
     addToDo: (tasks: toDos) => void,
     removeToDo: (task: toDos) => void,
     updateWidth: () => void,

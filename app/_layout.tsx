@@ -5,7 +5,8 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, createContext, useState } from 'react';
 import { app, toDos, appProvider } from '@/types';
-
+import "react-native-get-random-values";
+import { v4 as uuidv4, v4 } from "uuid";
 
 import { useColorScheme } from '@/components/useColorScheme';
 export const appContext = createContext<appProvider | undefined>(undefined)
@@ -54,6 +55,7 @@ function RootLayoutNav() {
 
   const colorScheme = useColorScheme();
 
+  const [id, setId] = useState<string>(v4());
   const [toDos, setToDos] = useState<toDos[]>()
   const [width, setWidth] = useState<number>(0)
   const [height, setHeight] = useState<number>(0)
@@ -127,6 +129,7 @@ function RootLayoutNav() {
         maxHealth,
         defense,
         speed,
+        id,
         addToDo,
         removeToDo,
         updateWidth,
