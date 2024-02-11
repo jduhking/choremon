@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Button, Pressable } from "react-native";
+import { View, Button, Pressable, SafeAreaView } from "react-native";
 import { Text } from "@/components/Themed";
 import { Entypo, Ionicons, Octicons } from "@expo/vector-icons";
 import "react-native-get-random-values";
@@ -30,7 +30,7 @@ const AddTask = () => {
   },[intent])
 
   return (
-    <View style={{ alignItems: "center" }}>
+    <SafeAreaView style={{ alignItems: "center" }}>
       <View style={{ width: "70%", paddingTop: "5%", paddingBottom : "3%" }}>
         <Text style={{ fontSize: 18 }}>Chores</Text>
       </View>
@@ -112,7 +112,7 @@ const AddTask = () => {
           </View>
         ))}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
